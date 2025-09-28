@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accounts</title>
+</head>
+<body>
+    <h1>Accounts</h1>
+    <form method="post" action="/admin/create-user">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="text" name="role" placeholder="Role" required />
+        <button type="submit">Add Account</button>
+    </form>
+
+    <h2>Existing Accounts</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th><th>Username</th><th>Email</th><th>Role</th>
+        </tr>
+        <tr th:each="acct : ${accounts}">
+            <td th:text="${acct.id}"></td>
+            <td th:text="${acct.username}"></td>
+            <td th:text="${acct.email}"></td>
+            <td th:text="${acct.role}"></td>
+        </tr>
+    </table>
+
+    <p><a href="/admin/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,10 @@
+com/maven/album/PlayerApplication.class
+com/maven/album/AdminController.class
+com/maven/album/AccountService.class
+com/maven/album/IncomingRecord.class
+com/maven/album/ProjectService.class
+com/maven/album/ProducerService.class
+com/maven/album/IncomingService.class
+com/maven/album/Project.class
+com/maven/album/Producer.class
+com/maven/album/Account.class

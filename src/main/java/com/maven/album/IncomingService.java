@@ -3,32 +3,35 @@ package com.maven.album;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 
 @Service
 public class IncomingService {
-    private final List<IncomingRecord> incoming = new ArrayList<>();
-    private long counter = 1;
+    private final List<IncomingRecord> records = new ArrayList<>();
 
     public IncomingService() {
-        addTestRecord("Test Artist 1", "Track A");
-        addTestRecord("Test Artist 2", "Track B");
+        // Seed demo records with correct 10-arg constructor
+        records.add(new IncomingRecord(
+            "1", "Email", "Message", "Welcome to the system!",
+            "-", "-", "-", "-", "-", new ArrayList<>()
+        ));
+        records.add(new IncomingRecord(
+            "2", "Upload", "File", "demo-track.mp3",
+            "-", "-", "-", "-", "-", new ArrayList<>()
+        ));
+        records.add(new IncomingRecord(
+            "3", "API", "Webhook", "Project update received",
+            "-", "-", "-", "-", "-", new ArrayList<>()
+        ));
     }
 
     public List<IncomingRecord> getAllIncoming() {
-        return incoming;
+        return records;
     }
 
-    public void addTestRecord(String artist, String track) {
-        incoming.add(new IncomingRecord(
-                "IN-" + counter++, artist, track,
-                "2025-09-01T00:00:00Z",
-                "SEED",
-                "NEW",
-                "DemoAlbum",
-                "DemoLabel",
-                "Seeded row for UI",
-                Arrays.asList("seed","demo")
+    public void addTestRecord(String id, String source, String type, String content) {
+        records.add(new IncomingRecord(
+            id, source, type, content,
+            "-", "-", "-", "-", "-", new ArrayList<>()
         ));
     }
 }

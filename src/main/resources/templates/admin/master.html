@@ -3,15 +3,13 @@
 <head><title>Incoming Data</title></head>
 <body>
   <h1>Incoming Data</h1>
+  <p>Total records: <span th:text="${#lists.size(incomingData)}"></span></p>
   <table border="1">
-    <tr><th>ID</th><th>Artist</th><th>Track</th><th>Status</th></tr>
-    <tr th:each="rec : ${incomingData}">
-      <td th:text="${rec.id}"></td>
-      <td th:text="${rec.artist}"></td>
-      <td th:text="${rec.track}"></td>
-      <td th:text="${rec.status}"></td>
+    <tr th:each="item : ${incomingData}">
+      <td th:text="${item}"></td>
     </tr>
   </table>
-  <a href="/admin/dashboard">Back</a>
+  <br>
+  <a href="/admin/dashboard">⬅ Back to Dashboard</a>
 </body>
 </html>

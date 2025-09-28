@@ -2,12 +2,17 @@
 <html>
 <head><title>Create Project</title></head>
 <body>
-  <h1>Create Project for Producer [[${producerId}]]</h1>
+  <h1>Create Project</h1>
   <form th:action="@{'/admin/projects/' + ${producerId} + '/create'}" method="post">
-    <input type="text" name="name" placeholder="Project Name" required>
-    <input type="text" name="startDate" placeholder="Start Date (YYYY-MM-DD)" required>
-    <button type="submit">Create</button>
+    <label>Project Name:</label>
+    <input type="text" name="name" style="width:300px;"><br><br>
+
+    <label>Start Date:</label>
+    <input type="date" name="startDate" style="width:200px;"><br><br>
+
+    <input type="submit" value="Create Project">
   </form>
-  <a th:href="@{'/admin/projects/' + ${producerId}}">Back</a>
+  <br>
+  <a th:href="@{'/admin/projects/' + ${producerId}}">⬅ Back to Projects</a>
 </body>
 </html>

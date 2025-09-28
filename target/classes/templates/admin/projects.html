@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Projects</title></head>
+<body>
+  <h1>Projects for Producer [[${producerId}]]</h1>
+  <a th:href="@{'/admin/projects/' + ${producerId} + '/create'}">+ Create New Project</a>
+  <table border="1">
+    <tr><th>ID</th><th>Name</th><th>Start Date</th><th>Magic Link</th></tr>
+    <tr th:each="proj : ${projects}">
+      <td th:text="${proj.id}"></td>
+      <td th:text="${proj.name}"></td>
+      <td th:text="${proj.startDate}"></td>
+      <td><a th:href="@{/${proj.magicLink}}" th:text="${proj.magicLink}"></a></td>
+    </tr>
+  </table>
+  <a href="/admin/producers">Back to Producers</a>
+</body>
+</html>

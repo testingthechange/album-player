@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Producers</title></head>
+<body>
+  <h1>Producers</h1>
+  <!-- Create Producer Link -->
+  <a href="/admin/create-producer">+ Create New Producer</a>
+  <br><br>
+  <table border="1">
+    <tr><th>ID</th><th>Name</th><th>Email</th></tr>
+    <tr th:each="prod : ${producers}">
+      <td th:text="${prod.id}"></td>
+      <td>
+        <a th:href="@{'/admin/projects/' + ${prod.id}}" th:text="${prod.name}"></a>
+      </td>
+      <td th:text="${prod.email}"></td>
+    </tr>
+  </table>
+  <a href="/admin/dashboard">Back</a>
+</body>
+</html>

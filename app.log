@@ -7,20 +7,20 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2025-09-27T20:44:48.236-07:00  INFO 18670 --- [           main] com.maven.album.PlayerApplication        : Starting PlayerApplication v0.0.1-SNAPSHOT using Java 25 with PID 18670 (/Users/joelnakabayashi/album-player/target/album-player-0.0.1-SNAPSHOT.jar started by joelnakabayashi in /Users/joelnakabayashi/album-player)
-2025-09-27T20:44:48.240-07:00  INFO 18670 --- [           main] com.maven.album.PlayerApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-09-27T20:49:03.596-07:00  INFO 18896 --- [           main] com.maven.album.PlayerApplication        : Starting PlayerApplication v0.0.1-SNAPSHOT using Java 25 with PID 18896 (/Users/joelnakabayashi/album-player/target/album-player-0.0.1-SNAPSHOT.jar started by joelnakabayashi in /Users/joelnakabayashi/album-player)
+2025-09-27T20:49:03.599-07:00  INFO 18896 --- [           main] com.maven.album.PlayerApplication        : No active profile set, falling back to 1 default profile: "default"
 WARNING: A restricted method in java.lang.System has been called
 WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (jar:nested:/Users/joelnakabayashi/album-player/target/album-player-0.0.1-SNAPSHOT.jar/!BOOT-INF/lib/tomcat-embed-core-10.1.20.jar!/)
 WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
 WARNING: Restricted methods will be blocked in a future release unless native access is enabled
 
-2025-09-27T20:44:49.146-07:00  INFO 18670 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9292 (http)
-2025-09-27T20:44:49.158-07:00  INFO 18670 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-09-27T20:44:49.158-07:00  INFO 18670 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
-2025-09-27T20:44:49.188-07:00  INFO 18670 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2025-09-27T20:44:49.189-07:00  INFO 18670 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 868 ms
-2025-09-27T20:44:49.533-07:00  INFO 18670 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9292 (http) with context path ''
-2025-09-27T20:44:49.550-07:00  INFO 18670 --- [           main] com.maven.album.PlayerApplication        : Started PlayerApplication in 1.783 seconds (process running for 2.444)
-2025-09-27T20:45:09.450-07:00  INFO 18670 --- [nio-9292-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-09-27T20:45:09.450-07:00  INFO 18670 --- [nio-9292-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2025-09-27T20:45:09.451-07:00  INFO 18670 --- [nio-9292-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-09-27T20:49:04.534-07:00  INFO 18896 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9292 (http)
+2025-09-27T20:49:04.551-07:00  INFO 18896 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-27T20:49:04.552-07:00  INFO 18896 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2025-09-27T20:49:04.594-07:00  INFO 18896 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-27T20:49:04.595-07:00  INFO 18896 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 901 ms
+2025-09-27T20:49:05.000-07:00  INFO 18896 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9292 (http) with context path ''
+2025-09-27T20:49:05.019-07:00  INFO 18896 --- [           main] com.maven.album.PlayerApplication        : Started PlayerApplication in 1.873 seconds (process running for 2.319)
+2025-09-27T20:49:18.523-07:00  INFO 18896 --- [nio-9292-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-09-27T20:49:18.524-07:00  INFO 18896 --- [nio-9292-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-09-27T20:49:18.525-07:00  INFO 18896 --- [nio-9292-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

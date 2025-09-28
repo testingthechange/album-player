@@ -25,17 +25,20 @@ public class AdminController {
         this.incomingService = incomingService;
     }
 
+    // ---------------- Dashboard ----------------
     @GetMapping("/dashboard")
     public String dashboard() {
         return "admin/dashboard";
     }
 
+    // ---------------- Master ----------------
     @GetMapping("/master")
     public String master(Model model) {
         model.addAttribute("incomingData", incomingService.getAllIncoming());
         return "admin/master";
     }
 
+    // ---------------- Accounts ----------------
     @GetMapping("/accounts")
     public String listAccounts(Model model) {
         model.addAttribute("accounts", accountService.getAll());
@@ -52,10 +55,16 @@ public class AdminController {
         return "redirect:/admin/accounts";
     }
 
+    // ---------------- Producers ----------------
     @GetMapping("/producers")
     public String listProducers(Model model) {
         model.addAttribute("producers", producerService.getAll());
         return "admin/producers";
+    }
+
+    @GetMapping("/create-producer")
+    public String createProducerForm() {
+        return "admin/create-producer";
     }
 
     @PostMapping("/create-producer")
@@ -65,5 +74,29 @@ public class AdminController {
     ) {
         producerService.addProducer(name, email);
         return "redirect:/admin/producers";
+    }
+
+    // ---------------- Projects ----------------
+    @GetMapping("/projects/{producerId}")
+    public String listProjects(@PathVariable Long producerId, Model model) {
+        model.addAttribute("projects", projectService.getByProducerId(producerId));
+        model.addAttribute("producerId", producerId);
+        return "admin/projects";
+    }
+
+    @GetMapping("/projects/{producerId}/create")
+    public String createProjectForm(@PathVariable Long producerId, Model model) {
+        model.addAttribute("producerId", producerId);
+        return "admin/create-project";
+    }
+
+    @PostMapping("/projects/{producerId}/create")
+    public String createProject(
+            @PathVariable Long producerId,
+            @RequestParam String name,
+            @RequestParam String startDate
+    ) {
+        projectService.createProject(producerId, name, startDate);
+        return "redirect:/admin/projects/" + producerId;
     }
 }

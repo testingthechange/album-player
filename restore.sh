@@ -1,21 +1,14 @@
 #!/bin/bash
-echo "🔄 Restoring stable album-player..."
+set -e
 
-# 1. Remove leftover Security files
-rm -f src/main/java/com/maven/album/SecurityConfig.java
-rm -f src/main/java/com/maven/album/AdminAccount.java
-rm -f src/main/java/com/maven/album/AdminAccountService.java
+echo "🧹 Cleaning old sources..."
+rm -rf src/main/java/com/maven/album/*
+rm -rf src/main/resources/templates/admin
 
-# 2. Kill any process on port 9292
-PID=$(lsof -ti :9292)
-if [ ! -z "$PID" ]; then
-  echo "⚠️  Killing process on port 9292 (PID $PID)..."
-  kill -9 $PID
-else
-  echo "✅ No process found on port 9292."
-fi
+mkdir -p src/main/java/com/maven/album
+mkdir -p src/main/resources/templates/admin
 
-# 3. PlayerApplication.java
+# ---------------- PlayerApplication.java ----------------
 cat > src/main/java/com/maven/album/PlayerApplication.java <<'EOT'
 package com.maven.album;
 
@@ -30,7 +23,7 @@ public class PlayerApplication {
 }
 EOT
 
-# 4. AdminController.java
+# ---------------- AdminController.java ----------------
 cat > src/main/java/com/maven/album/AdminController.java <<'EOT'
 package com.maven.album;
 
@@ -59,17 +52,20 @@ public class AdminController {
         this.incomingService = incomingService;
     }
 
+    // ---------------- Dashboard ----------------
     @GetMapping("/dashboard")
     public String dashboard() {
         return "admin/dashboard";
     }
 
+    // ---------------- Master ----------------
     @GetMapping("/master")
     public String master(Model model) {
         model.addAttribute("incomingData", incomingService.getAllIncoming());
         return "admin/master";
     }
 
+    // ---------------- Accounts ----------------
     @GetMapping("/accounts")
     public String listAccounts(Model model) {
         model.addAttribute("accounts", accountService.getAll());
@@ -86,10 +82,16 @@ public class AdminController {
         return "redirect:/admin/accounts";
     }
 
+    // ---------------- Producers ----------------
     @GetMapping("/producers")
     public String listProducers(Model model) {
         model.addAttribute("producers", producerService.getAll());
         return "admin/producers";
+    }
+
+    @GetMapping("/create-producer")
+    public String createProducerForm() {
+        return "admin/create-producer";
     }
 
     @PostMapping("/create-producer")
@@ -100,267 +102,177 @@ public class AdminController {
         producerService.addProducer(name, email);
         return "redirect:/admin/producers";
     }
-}
-EOT
 
-# 5. Account.java
-cat > src/main/java/com/maven/album/Account.java <<'EOT'
-package com.maven.album;
-
-public class Account {
-    private long id;
-    private String username;
-    private String email;
-    private String role;
-    private String extraField;
-
-    public Account(long id, String username, String email, String role, String extraField) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.role = role;
-        this.extraField = extraField;
+    // ---------------- Projects ----------------
+    @GetMapping("/projects/{producerId}")
+    public String listProjects(@PathVariable Long producerId, Model model) {
+        model.addAttribute("projects", projectService.getByProducerId(producerId));
+        model.addAttribute("producerId", producerId);
+        return "admin/projects";
     }
 
-    public long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
-    public String getRole() { return role; }
-    public String getExtraField() { return extraField; }
-}
-EOT
-
-# 6. AccountService.java
-cat > src/main/java/com/maven/album/AccountService.java <<'EOT'
-package com.maven.album;
-
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-
-@Service
-public class AccountService {
-    private final List<Account> accounts = new ArrayList<>();
-    private long counter = 1;
-
-    public AccountService() {
-        addAccount("demoAdmin", "admin@example.com", "ADMIN", "placeholder");
-        addAccount("demoUser", "user@example.com", "USER", "placeholder");
+    @GetMapping("/projects/{producerId}/create")
+    public String createProjectForm(@PathVariable Long producerId, Model model) {
+        model.addAttribute("producerId", producerId);
+        return "admin/create-project";
     }
 
-    public List<Account> getAll() {
-        return accounts;
-    }
-
-    public void addAccount(String username, String email, String role, String extraField) {
-        Account account = new Account(counter++, username, email, role, extraField);
-        accounts.add(account);
+    @PostMapping("/projects/{producerId}/create")
+    public String createProject(
+            @PathVariable Long producerId,
+            @RequestParam String name,
+            @RequestParam String startDate
+    ) {
+        projectService.createProject(producerId, name, startDate);
+        return "redirect:/admin/projects/" + producerId;
     }
 }
 EOT
 
-# 7. Project.java
-cat > src/main/java/com/maven/album/Project.java <<'EOT'
-package com.maven.album;
-
-public class Project {
-    private long id;
-    private String name;
-    private String startDate;
-    private long producerId;
-    private String magicLink;
-
-    public Project(long id, String name, String startDate, long producerId, String magicLink) {
-        this.id = id;
-        this.name = name;
-        this.startDate = startDate;
-        this.producerId = producerId;
-        this.magicLink = magicLink;
-    }
-
-    public long getId() { return id; }
-    public String getName() { return name; }
-    public String getStartDate() { return startDate; }
-    public long getProducerId() { return producerId; }
-    public String getMagicLink() { return magicLink; }
-}
+# ---------------- dashboard.html ----------------
+cat > src/main/resources/templates/admin/dashboard.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Dashboard</title></head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <ul>
+    <li><a href="/admin/accounts">Accounts</a></li>
+    <li><a href="/admin/producers">Producers</a></li>
+    <li><a href="/admin/master">Incoming Data</a></li>
+  </ul>
+</body>
+</html>
 EOT
 
-# 8. ProjectService.java
-cat > src/main/java/com/maven/album/ProjectService.java <<'EOT'
-package com.maven.album;
-
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Service
-public class ProjectService {
-    private final List<Project> projects = new ArrayList<>();
-    private long counter = 1;
-
-    public ProjectService() {
-        createProject(1L, "Demo Project 1", "2025-09-01");
-        createProject(1L, "Demo Project 2", "2025-09-15");
-    }
-
-    public List<Project> getAll() {
-        return projects;
-    }
-
-    public List<Project> getByProducerId(Long producerId) {
-        return projects.stream()
-                .filter(p -> p.getProducerId() == producerId)
-                .collect(Collectors.toList());
-    }
-
-    public void createProject(Long producerId, String name, String startDate) {
-        Project project = new Project(counter++, name, startDate, producerId, "magic-" + counter);
-        projects.add(project);
-    }
-}
+# ---------------- accounts.html ----------------
+cat > src/main/resources/templates/admin/accounts.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Accounts</title></head>
+<body>
+  <h1>Accounts</h1>
+  <form action="/admin/create-user" method="post">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="role" placeholder="Role" required>
+    <button type="submit">Add Account</button>
+  </form>
+  <table border="1">
+    <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th></tr>
+    <tr th:each="acc : ${accounts}">
+      <td th:text="${acc.id}"></td>
+      <td th:text="${acc.username}"></td>
+      <td th:text="${acc.email}"></td>
+      <td th:text="${acc.role}"></td>
+    </tr>
+  </table>
+  <a href="/admin/dashboard">Back</a>
+</body>
+</html>
 EOT
 
-# 9. IncomingRecord.java
-cat > src/main/java/com/maven/album/IncomingRecord.java <<'EOT'
-package com.maven.album;
-
-import java.util.List;
-
-public class IncomingRecord {
-    private String id;
-    private String artist;
-    private String track;
-    private String timestamp;
-    private String source;
-    private String status;
-    private String album;
-    private String label;
-    private String notes;
-    private List<String> tags;
-
-    public IncomingRecord(String id, String artist, String track, String timestamp,
-                          String source, String status, String album, String label,
-                          String notes, List<String> tags) {
-        this.id = id;
-        this.artist = artist;
-        this.track = track;
-        this.timestamp = timestamp;
-        this.source = source;
-        this.status = status;
-        this.album = album;
-        this.label = label;
-        this.notes = notes;
-        this.tags = tags;
-    }
-
-    public String getId() { return id; }
-    public String getArtist() { return artist; }
-    public String getTrack() { return track; }
-    public String getTimestamp() { return timestamp; }
-    public String getSource() { return source; }
-    public String getStatus() { return status; }
-    public String getAlbum() { return album; }
-    public String getLabel() { return label; }
-    public String getNotes() { return notes; }
-    public List<String> getTags() { return tags; }
-}
+# ---------------- producers.html ----------------
+cat > src/main/resources/templates/admin/producers.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Producers</title></head>
+<body>
+  <h1>Producers</h1>
+  <a href="/admin/create-producer">+ Create New Producer</a>
+  <table border="1">
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Projects</th></tr>
+    <tr th:each="prod : ${producers}">
+      <td th:text="${prod.id}"></td>
+      <td>
+        <a th:href="@{'/admin/projects/' + ${prod.id}}" th:text="${prod.name}"></a>
+      </td>
+      <td th:text="${prod.email}"></td>
+      <td>
+        <a th:href="@{'/admin/projects/' + ${prod.id}}">View Projects</a>
+      </td>
+    </tr>
+  </table>
+  <a href="/admin/dashboard">Back</a>
+</body>
+</html>
 EOT
 
-# 10. IncomingService.java
-cat > src/main/java/com/maven/album/IncomingService.java <<'EOT'
-package com.maven.album;
-
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-
-@Service
-public class IncomingService {
-    private final List<IncomingRecord> incoming = new ArrayList<>();
-    private long counter = 1;
-
-    public IncomingService() {
-        addTestRecord("Test Artist 1", "Track A");
-        addTestRecord("Test Artist 2", "Track B");
-    }
-
-    public List<IncomingRecord> getAllIncoming() {
-        return incoming;
-    }
-
-    public void addTestRecord(String artist, String track) {
-        incoming.add(new IncomingRecord(
-                "IN-" + counter++, artist, track,
-                "2025-09-01T00:00:00Z",
-                "SEED",
-                "NEW",
-                "DemoAlbum",
-                "DemoLabel",
-                "Seeded row for UI",
-                Arrays.asList("seed","demo")
-        ));
-    }
-}
+# ---------------- create-producer.html ----------------
+cat > src/main/resources/templates/admin/create-producer.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Create Producer</title></head>
+<body>
+  <h1>Create Producer</h1>
+  <form action="/admin/create-producer" method="post">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Add Producer</button>
+  </form>
+  <a href="/admin/producers">Back to Producers</a>
+</body>
+</html>
 EOT
 
-# 11. Producer.java
-cat > src/main/java/com/maven/album/Producer.java <<'EOT'
-package com.maven.album;
-
-public class Producer {
-    private long id;
-    private String name;
-    private String email;
-
-    public Producer(long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-    }
-
-    public long getId() { return id; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-}
+# ---------------- master.html ----------------
+cat > src/main/resources/templates/admin/master.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Incoming Data</title></head>
+<body>
+  <h1>Incoming Data</h1>
+  <table border="1">
+    <tr><th>ID</th><th>Artist</th><th>Track</th><th>Status</th></tr>
+    <tr th:each="rec : ${incomingData}">
+      <td th:text="${rec.id}"></td>
+      <td th:text="${rec.artist}"></td>
+      <td th:text="${rec.track}"></td>
+      <td th:text="${rec.status}"></td>
+    </tr>
+  </table>
+  <a href="/admin/dashboard">Back</a>
+</body>
+</html>
 EOT
 
-# 12. ProducerService.java
-cat > src/main/java/com/maven/album/ProducerService.java <<'EOT'
-package com.maven.album;
-
-import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
-
-@Service
-public class ProducerService {
-    private final List<Producer> producers = new ArrayList<>();
-    private long counter = 1;
-
-    public ProducerService() {
-        addProducer("Demo Producer", "producer@example.com");
-    }
-
-    public List<Producer> getAll() {
-        return producers;
-    }
-
-    public void addProducer(String name, String email) {
-        Producer producer = new Producer(counter++, name, email);
-        producers.add(producer);
-    }
-}
+# ---------------- projects.html ----------------
+cat > src/main/resources/templates/admin/projects.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Projects</title></head>
+<body>
+  <h1>Projects for Producer [[${producerId}]]</h1>
+  <a th:href="@{'/admin/projects/' + ${producerId} + '/create'}">+ Create New Project</a>
+  <table border="1">
+    <tr><th>ID</th><th>Name</th><th>Start Date</th><th>Magic Link</th></tr>
+    <tr th:each="proj : ${projects}">
+      <td th:text="${proj.id}"></td>
+      <td th:text="${proj.name}"></td>
+      <td th:text="${proj.startDate}"></td>
+      <td><a th:href="@{/${proj.magicLink}}" th:text="${proj.magicLink}"></a></td>
+    </tr>
+  </table>
+  <a href="/admin/producers">Back to Producers</a>
+</body>
+</html>
 EOT
 
-# 13. Rebuild
-echo "🛠️  Cleaning and rebuilding..."
-mvn clean package
+# ---------------- create-project.html ----------------
+cat > src/main/resources/templates/admin/create-project.html <<'EOT'
+<!DOCTYPE html>
+<html>
+<head><title>Create Project</title></head>
+<body>
+  <h1>Create Project for Producer [[${producerId}]]</h1>
+  <form th:action="@{'/admin/projects/' + ${producerId} + '/create'}" method="post">
+    <input type="text" name="name" placeholder="Project Name" required>
+    <input type="text" name="startDate" placeholder="Start Date (YYYY-MM-DD)" required>
+    <button type="submit">Create</button>
+  </form>
+  <a th:href="@{'/admin/projects/' + ${producerId}}">Back</a>
+</body>
+</html>
+EOT
 
-# 14. Restart app in background
-echo "🚀 Starting application on port 9292..."
-nohup java -jar target/album-player-0.0.1-SNAPSHOT.jar --server.port=9292 > app.log 2>&1 &
-
-echo "✅ Done! Application is running. Check logs with: tail -f app.log"
+echo "✅ Restore complete. Now run: mvn clean package && java -jar target/album-player-0.0.1-SNAPSHOT.jar --server.port=9292"

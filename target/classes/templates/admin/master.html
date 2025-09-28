@@ -1,22 +1,17 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Incoming Data</title>
-</head>
+<html>
+<head><title>Incoming Data</title></head>
 <body>
-    <h1>Incoming Data</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th><th>Artist</th><th>Track</th><th>Album</th><th>Label</th>
-        </tr>
-        <tr th:each="record : ${incomingData}">
-            <td th:text="${record.id}"></td>
-            <td th:text="${record.artist}"></td>
-            <td th:text="${record.track}"></td>
-            <td th:text="${record.album}"></td>
-            <td th:text="${record.label}"></td>
-        </tr>
-    </table>
-    <p><a href="/admin/dashboard">Back to Dashboard</a></p>
+  <h1>Incoming Data</h1>
+  <table border="1">
+    <tr><th>ID</th><th>Artist</th><th>Track</th><th>Status</th></tr>
+    <tr th:each="rec : ${incomingData}">
+      <td th:text="${rec.id}"></td>
+      <td th:text="${rec.artist}"></td>
+      <td th:text="${rec.track}"></td>
+      <td th:text="${rec.status}"></td>
+    </tr>
+  </table>
+  <a href="/admin/dashboard">Back</a>
 </body>
 </html>

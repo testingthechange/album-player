@@ -1,7 +1,9 @@
 com/maven/album/PlayerApplication.class
 com/maven/album/AdminController.class
+com/maven/album/SecurityConfig.class
 com/maven/album/AccountService.class
 com/maven/album/IncomingRecord.class
+com/maven/album/AccountRepository.class
 com/maven/album/ProjectService.class
 com/maven/album/ProducerService.class
 com/maven/album/IncomingService.class

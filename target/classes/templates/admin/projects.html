@@ -1,21 +1,41 @@
 <!DOCTYPE html>
-<html>
-<head><title>Projects</title></head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Projects</title>
+    <style>
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        a.button { padding: 6px 12px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
 <body>
-  <h1>Projects</h1>
-  <a th:href="@{'/admin/projects/' + ${producerId} + '/create'}">+ Create New Project</a>
-  <br><br>
-  <table border="1">
-    <tr><th>ID</th><th>Name</th><th>Start Date</th><th>Magic Link</th></tr>
-    <tr th:each="proj : ${projects}">
-      <td th:text="${proj.id}"></td>
-      <td th:text="${proj.name}"></td>
-      <td th:text="${proj.startDate}"></td>
-      <td th:text="${proj.magicLink}"></td>
+<h1>Projects</h1>
+
+<p>
+    <a class="button" th:href="@{'/admin/projects/' + ${producerId} + '/create'}">+ Add Project</a>
+</p>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>Magic Link</th>
     </tr>
-  </table>
-  <br>
-  <a href="/admin/producers">⬅ Back to Producers</a> |
-  <a href="/admin/dashboard">⬅ Back to Dashboard</a>
+    <tr th:each="project : ${projects}">
+        <td th:text="${project.id}"></td>
+        <td th:text="${project.name}"></td>
+        <td th:text="${project.startDate}"></td>
+        <td>
+            <a th:href="${project.magicLink}" target="_blank" th:text="${project.magicLink}"></a>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a href="/admin/producers">Back to Producers</a> |
+    <a href="/admin/dashboard">Back to Dashboard</a>
+</p>
 </body>
 </html>

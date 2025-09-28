@@ -1,15 +1,29 @@
 <!DOCTYPE html>
-<html>
-<head><title>Incoming Data</title></head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Master Albums</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { margin-bottom: 10px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 5px 0; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        li:nth-child(even) { background: #f9f9f9; }
+        a { text-decoration: none; color: #2196F3; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
 <body>
-  <h1>Incoming Data</h1>
-  <p>Total records: <span th:text="${#lists.size(incomingData)}"></span></p>
-  <table border="1">
-    <tr th:each="item : ${incomingData}">
-      <td th:text="${item}"></td>
-    </tr>
-  </table>
-  <br>
-  <a href="/admin/dashboard">⬅ Back to Dashboard</a>
+<h1>Master Albums</h1>
+
+<ul>
+    <li><a href="#">8 Song Album</a></li>
+    <li><a href="#">9 Song Album</a></li>
+    <li><a href="#">8 Song Shuffle</a></li>
+    <li><a href="#">9 Song Shuffle</a></li>
+</ul>
+
+<p>
+    <a href="/admin/dashboard">Back to Dashboard</a>
+</p>
 </body>
 </html>

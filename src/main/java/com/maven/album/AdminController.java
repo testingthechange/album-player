@@ -25,37 +25,11 @@ public class AdminController {
         this.incomingService = incomingService;
     }
 
-    // ---------------- Dashboard ----------------
     @GetMapping("/dashboard")
     public String dashboard() {
         return "admin/dashboard";
     }
 
-    // ---------------- Master ----------------
-    @GetMapping("/master")
-    public String master(Model model) {
-        model.addAttribute("incomingData", incomingService.getAllIncoming());
-        return "admin/master";
-    }
-
-    // ---------------- Accounts ----------------
-    @GetMapping("/accounts")
-    public String listAccounts(Model model) {
-        model.addAttribute("accounts", accountService.getAll());
-        return "admin/accounts";
-    }
-
-    @PostMapping("/create-user")
-    public String createUser(
-            @RequestParam String username,
-            @RequestParam String email,
-            @RequestParam String role
-    ) {
-        accountService.addAccount(username, email, role, "placeholder");
-        return "redirect:/admin/accounts";
-    }
-
-    // ---------------- Producers ----------------
     @GetMapping("/producers")
     public String listProducers(Model model) {
         model.addAttribute("producers", producerService.getAll());
@@ -68,15 +42,11 @@ public class AdminController {
     }
 
     @PostMapping("/create-producer")
-    public String createProducer(
-            @RequestParam String name,
-            @RequestParam String email
-    ) {
+    public String createProducer(@RequestParam String name, @RequestParam String email) {
         producerService.addProducer(name, email);
         return "redirect:/admin/producers";
     }
 
-    // ---------------- Projects ----------------
     @GetMapping("/projects/{producerId}")
     public String listProjects(@PathVariable Long producerId, Model model) {
         model.addAttribute("projects", projectService.getByProducerId(producerId));
@@ -98,5 +68,35 @@ public class AdminController {
     ) {
         projectService.createProject(producerId, name, startDate);
         return "redirect:/admin/projects/" + producerId;
+    }
+
+    @GetMapping("/master")
+    public String master(Model model) {
+        model.addAttribute("incomingData", incomingService.getAllIncoming());
+        return "admin/master";
+    }
+
+    @GetMapping("/accounts")
+    public String listAccounts(Model model) {
+        model.addAttribute("accounts", accountService.getAll());
+        return "admin/accounts";
+    }
+
+    @PostMapping("/create-user")
+    public String createUser(
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam String role,
+            @RequestParam String password
+    ) {
+        accountService.addAccount(username, email, role, password);
+        return "redirect:/admin/accounts";
+    }
+
+    // 🔧 Delete Account Support
+    @PostMapping("/accounts/delete/{id}")
+    public String deleteAccount(@PathVariable Long id) {
+        accountService.deleteAccount(id);
+        return "redirect:/admin/accounts";
     }
 }

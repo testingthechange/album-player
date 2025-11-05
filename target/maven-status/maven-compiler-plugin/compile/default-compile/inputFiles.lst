@@ -1,6 +1,7 @@
 /Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/AlbumPlayerApplication.java
 /Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/config/SecurityConfig.java
 /Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/controller/AuthController.java
+/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/controller/PageController.java
 /Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/model/User.java
 /Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/repository/UserRepository.java
 /Users/joelnakabayashi/album-player/src/main/java/com/maven/album/Account.java

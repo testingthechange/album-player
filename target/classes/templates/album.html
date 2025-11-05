@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Albums</title>
     <meta charset="UTF-8">
-    <title>Album</title>
-    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<header>
-    <h1>Album Page</h1>
-    <nav>
-        <a href="/">Home</a>
-    </nav>
-</header>
+    <div th:replace="fragments/navbar :: navbar"></div>
 
-<main>
-    <h2>Album Details</h2>
-    <p>This is where tracklist will go.</p>
-</main>
-
-<footer>
-    <p>&copy; 2025 Adaptive Album Player</p>
-</footer>
+    <h1>Album Store</h1>
+    <p>Here’s where we’ll list albums for browsing.</p>
 </body>
 </html>

@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Album Player - Home</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a> |
-        <a href="/album">Albums</a> |
-        <a href="/login">Login</a>
-    </nav>
+    <div th:replace="fragments/navbar :: navbar"></div>
 
-    <h1>Welcome to Album Player 🎵</h1>
-    <p>Stream, collect, and enjoy music albums.</p>
-
-    <footer>
-        <p>
-            <a href="/about">About</a> | 
-            <a href="/contact">Contact</a>
-        </p>
-    </footer>
+    <h1>Welcome to Album Player 🎶</h1>
+    <p>This is the public homepage.</p>
 </body>
 </html>

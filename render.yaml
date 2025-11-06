@@ -1,16 +1,18 @@
 services:
   - type: web
     name: album-player
-    env: java
-    plan: starter          # change if you want a bigger instance
+    runtime: docker
     branch: main
+    plan: starter
     autoDeploy: true
 
-    buildCommand: mvn -DskipTests package
-    startCommand: java -jar target/*.jar
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
 
-    healthCheckPath: /ping # your pong endpoint
+    healthCheckPath: /ping
 
     envVars:
       - key: JAVA_TOOL_OPTIONS
         value: -Xms128m -Xmx512m -XX:+UseSerialGC
+      - key: JAVA_VERSION
+        value: "21"

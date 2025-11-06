@@ -1,0 +1,16 @@
+<plugin>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-maven-plugin</artifactId>
+  <version>3.3.4</version>
+  <configuration>
+    <mainClass>com.example.albumplayer.AlbumPlayerApplication</mainClass>
+  </configuration>
+  <executions>
+    <execution>
+      <goals>
+        <goal>repackage</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+

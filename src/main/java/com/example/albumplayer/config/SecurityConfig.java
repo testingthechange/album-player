@@ -2,22 +2,20 @@ package com.example.albumplayer.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 public class SecurityConfig {
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
       .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**", "/ping").permitAll()
+        .requestMatchers("/", "/index.html", "/ping", "/css/**", "/js/**", "/images/**", "/h2-console/**").permitAll()
         .anyRequest().permitAll()
       )
-      .httpBasic(Customizer.withDefaults())
-      .formLogin(login -> login.disable());
+      .headers(h -> h.frameOptions(f -> f.sameOrigin())); // required for H2 console
     return http.build();
   }
 }

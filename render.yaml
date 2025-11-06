@@ -1,7 +1,16 @@
 services:
   - type: web
     name: album-player
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
+    env: java
+    plan: starter          # change if you want a bigger instance
+    branch: main
+    autoDeploy: true
 
+    buildCommand: mvn -DskipTests package
+    startCommand: java -jar target/*.jar
+
+    healthCheckPath: /ping # your pong endpoint
+
+    envVars:
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xms128m -Xmx512m -XX:+UseSerialGC

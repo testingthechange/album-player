@@ -15,5 +15,4 @@ com/maven/album/SecurityConfig.class
 com/maven/album/AccountService.class
 com/example/albumplayer/PingController.class
 com/maven/album/IncomingService.class
-com/example/albumplayer/SecurityConfig.class
 com/maven/album/Account.class

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${producer.name} + ' Profile'">Producer Profile</title>
+</head>
+<body>
+  <div th:replace="fragments/admin-navbar :: admin-navbar"></div>
+
+  <h1 th:text="${producer.name}">Producer Name</h1>
+  <p><strong>Email:</strong> <span th:text="${producer.email}"></span></p>
+  <p><strong>Description:</strong> <span th:text="${producer.description}"></span></p>
+
+  <!-- ✅ Flash message -->
+  <div th:if="${message}" style="color: green; font-weight: bold;">
+    <p th:text="${message}"></p>
+  </div>
+
+  <!-- ✅ Projects -->
+  <h2>Projects</h2>
+  <table border="1" cellpadding="6">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Project Name</th>
+        <th>Start Date</th>
+        <th>Date Sent</th>
+        <th>Date Completed</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="proj,iter : ${producer.projects}">
+        <td th:text="${iter.index + 1}"></td>
+        <td th:text="${proj.name}"></td>
+        <td th:text="${proj.startDate}"></td>
+        <td th:text="${proj.dateSent}"></td>
+        <td th:text="${proj.dateCompleted}"></td>
+        <td>
+          <!-- Send Magic Link (disabled if already sent) -->
+          <form th:action="@{/producer/{id}/projects/{index}/send-link(id=${producer.id},index=${iter.index})}" method="post" style="display:inline;">
+            <button type="submit" th:disabled="${proj.magicLinkSent}">Send Magic Link</button>
+          </form>
+          <!-- Mark complete -->
+          <form th:action="@{/producer/{id}/projects/{index}/complete(id=${producer.id},index=${iter.index})}" method="post" style="display:inline;">
+            <button type="submit">Mark Complete</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add new project -->
+  <h3>Add Project</h3>
+  <form th:action="@{/producer/{id}/projects/add(id=${producer.id})}" method="post">
+    <input type="text" name="projectName" placeholder="Project name" required>
+    <input type="date" name="startDate" required>
+    <button type="submit">Add</button>
+  </form>
+</body>
+</html>

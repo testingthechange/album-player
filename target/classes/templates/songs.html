@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Songs - Album Player</title>
+</head>
+<body>
+    <div th:replace="fragments/navbar :: navbar"></div>
+
+    <h1>Songs</h1>
+    <p>Select a song to view details:</p>
+
+    <!-- ✅ Dropdown to jump between Song 1–9 -->
+    <label for="songSelect">Jump to Song:</label>
+    <select id="songSelect" onchange="location.href='/song/' + this.value">
+        <option value="" disabled selected>Select a song</option>
+        <option value="1">Song 1</option>
+        <option value="2">Song 2</option>
+        <option value="3">Song 3</option>
+        <option value="4">Song 4</option>
+        <option value="5">Song 5</option>
+        <option value="6">Song 6</option>
+        <option value="7">Song 7</option>
+        <option value="8">Song 8</option>
+        <option value="9">Song 9*</option>
+    </select>
+</body>
+</html>

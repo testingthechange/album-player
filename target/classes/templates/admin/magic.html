@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Magic Link</title>
+</head>
+<body>
+    <h1>Magic Link</h1>
+
+    <p>
+        Project Magic Link: 
+        <a th:href="@{'/magic/' + ${magicLink}}" target="_blank" th:text="${magicLink}"></a>
+    </p>
+
+    <p><a th:href="@{/admin/dashboard}">← Back to Dashboard</a></p>
+</body>
+</html>

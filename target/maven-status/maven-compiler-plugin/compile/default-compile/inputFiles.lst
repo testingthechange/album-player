@@ -1,16 +1,18 @@
-/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/AlbumPlayerApplication.java
-/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/config/SecurityConfig.java
-/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/controller/AuthController.java
-/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/model/User.java
-/Users/joelnakabayashi/album-player/src/main/java/com/example/albumplayer/repository/UserRepository.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/Account.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/AccountRepository.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/AccountService.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/AdminController.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/IncomingRecord.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/IncomingService.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/Producer.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/ProducerService.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/Project.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/ProjectService.java
-/Users/joelnakabayashi/album-player/src/main/java/com/maven/album/SecurityConfig.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/AlbumPlayerApplication.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/HomeController.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/SecurityConfig.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/config/SecurityConfig.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/controller/AuthController.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/model/User.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/repository/UserRepository.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/Account.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/AccountRepository.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/AccountService.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/AdminController.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/IncomingRecord.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/IncomingService.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/Producer.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/ProducerService.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/Project.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/ProjectService.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/SecurityConfig.java

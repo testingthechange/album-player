@@ -1,9 +1,12 @@
+com/example/albumplayer/cms/DirectusClient.class
 com/maven/album/AdminController.class
 com/example/albumplayer/HomeController.class
 com/maven/album/IncomingRecord.class
 com/maven/album/AccountRepository.class
 com/maven/album/ProjectService.class
 com/maven/album/ProducerService.class
+com/example/albumplayer/web/PromptController.class
+com/example/albumplayer/cms/PromptService.class
 com/example/albumplayer/config/SecurityConfig.class
 com/maven/album/Project.class
 com/example/albumplayer/controller/AuthController.class

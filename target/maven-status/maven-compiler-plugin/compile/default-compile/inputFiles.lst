@@ -1,10 +1,13 @@
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/AlbumPlayerApplication.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/HomeController.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/PingController.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/cms/DirectusClient.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/cms/PromptService.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/config/SecurityConfig.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/controller/AuthController.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/model/User.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/repository/UserRepository.java
+/Users/joelnakabayashi/album-player 5/src/main/java/com/example/albumplayer/web/PromptController.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/Account.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/AccountRepository.java
 /Users/joelnakabayashi/album-player 5/src/main/java/com/maven/album/AccountService.java

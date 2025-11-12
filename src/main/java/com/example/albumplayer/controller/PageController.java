@@ -8,21 +8,20 @@ public class PageController {
 
     @GetMapping("/home")
     public String home() {
-        return "home"; // maps to home.html
-    }
-
-    @GetMapping("/producer")
-    public String producer() {
-        return "producer"; // maps to producer.html
+        // Renders src/main/resources/templates/home.html
+        return "home";
     }
 
     @GetMapping("/song")
     public String song() {
-        return "song"; // maps to song.html
+        // Renders src/main/resources/templates/song.html
+        return "song";
     }
 
     @GetMapping("/meta")
     public String meta() {
-        return "meta"; // maps to meta.html
+        // Renders src/main/resources/templates/meta.html
+        return "meta";
     }
 }
+

@@ -1,0 +1,5 @@
+o
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.enabled=true
+

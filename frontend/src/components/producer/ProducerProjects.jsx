@@ -1,4 +1,7 @@
+// src/components/producer/ProducerProjects.jsx
 import React from "react";
+import ReturnChecklist from "../ReturnChecklist";
+import { hasMetaReturn } from "../../state/localProjectStorage";
 
 const initialProjectsByProducer = {
   prod_001: [
@@ -108,59 +111,57 @@ export function ProducerProjects({ producerId, onOpenMiniSite }) {
             <th>Date</th>
             <th>Magic link</th>
             <th>Open Mini-Site</th>
-            <th>Returned files checklist</th>
+            <th>Returned Files</th>
             <th>Return status</th>
           </tr>
         </thead>
         <tbody>
-          {projects.map((p) => (
-            <tr key={p.projectId}>
-              <td>{p.name}</td>
-              <td>{p.date}</td>
-              <td>
-                <button
-                  type="button"
-                  onClick={() => handleSendMagicLink(p.projectId)}
-                >
-                  {p.magicLinkSent ? "Resend magic link" : "Send magic link"}
-                </button>
-              </td>
-              <td>
-                <button
-                  type="button"
-                  onClick={() => handleOpenMini(p.projectId)}
-                >
-                  Open Mini-Site
-                </button>
-              </td>
-              <td>
-                {/* Boxed returned files area (placeholder) */}
-                <div
-                  style={{
-                    border: "1px solid black",
-                    padding: "4px",
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  <div>
-                    <strong>Returned files</strong>
-                  </div>
-                  <div>Album · Extended songs · Song 2 · Song 5 · Song 8</div>
-                  <div>NFT · Song 1 · Song 3 · Song 4 · Song 6 · Song 7 · Song 9</div>
-                </div>
-              </td>
-              <td>
-                {p.producerReturnReceived ? "✅ Received" : "⭕ Waiting"}
-              </td>
-            </tr>
-          ))}
+          {projects.map((p) => {
+            // Meta is considered "returned" if either:
+            // - storage has a Meta return for this project, OR
+            // - the old flag is set (fallback)
+            const metaReturned =
+              hasMetaReturn(p.projectId) || p.producerReturnReceived;
+
+            return (
+              <tr key={p.projectId}>
+                <td>{p.name}</td>
+                <td>{p.date}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => handleSendMagicLink(p.projectId)}
+                  >
+                    {p.magicLinkSent
+                      ? "Resend magic link"
+                      : "Send magic link"}
+                  </button>
+                </td>
+
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenMini(p.projectId)}
+                  >
+                    Open Mini-Site
+                  </button>
+                </td>
+
+                <td>
+                  <ReturnChecklist metaReturned={metaReturned} />
+                </td>
+
+                <td>{metaReturned ? "✅ Received" : "⭕ Waiting"}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       <p style={{ marginTop: "0.5rem", fontSize: "0.9rem" }}>
-        The boxed area is a placeholder for files/data that come back after the
-        producer uses the worksheet and saves Master Save. A green check will
-        show when the return is marked as received.
+        Returned files and status update automatically when the producer
+        completes Master Save on the mini-site Meta worksheet.
       </p>
     </div>
   );

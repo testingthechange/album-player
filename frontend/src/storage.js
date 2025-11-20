@@ -1,4 +1,4 @@
-// src/state/localProjectStorage.js
+// src/storage.js
 
 const META_KEY_PREFIX = "project_meta_return:";
 
@@ -22,9 +22,4 @@ export function loadMetaReturn(projectId) {
     console.error("Failed to load Meta return", err);
     return null;
   }
-}
-
-// ✅ NEW: simple flag helper used by the Projects page
-export function hasMetaReturn(projectId) {
-  return !!loadMetaReturn(projectId);
 }

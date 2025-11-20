@@ -1,29 +1,33 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Master Albums</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { margin-bottom: 10px; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 5px 0; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-        li:nth-child(even) { background: #f9f9f9; }
-        a { text-decoration: none; color: #2196F3; }
-        a:hover { text-decoration: underline; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Master Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f7; }
+    nav { background: #0d0d0f; padding: 12px 24px; }
+    nav a { color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 24px; }
+    nav a:hover { color: #ffd700; }
+    .page { max-width: 900px; margin: 0 auto; padding: 24px; }
+    h1 { margin-bottom: 8px; }
+    p { color: #555; }
+  </style>
 </head>
 <body>
-<h1>Master Albums</h1>
 
-<ul>
-    <li><a href="#">8 Song Album</a></li>
-    <li><a href="#">9 Song Album</a></li>
-    <li><a href="#">8 Song Shuffle</a></li>
-    <li><a href="#">9 Song Shuffle</a></li>
-</ul>
+<nav>
+  <a href="/admin/dashboard">Dashboard</a>
+  <a href="/admin/producers">Producers</a>
+  <a href="/admin/master">Master</a>
+  <a href="/admin/accounts">Accounts</a>
+  <a href="/admin/incoming">Incoming</a>
+</nav>
 
-<p>
-    <a href="/admin/dashboard">Back to Dashboard</a>
-</p>
+<div class="page">
+  <h1>Master Page</h1>
+  <p>This is the master placeholder page. This route is now live at <strong>/admin/master</strong>.</p>
+  <p>Later we can add tables, links, or anything else you want.</p>
+</div>
+
 </body>
 </html>

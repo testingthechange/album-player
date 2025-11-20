@@ -1,41 +1,215 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Projects</title>
-    <style>
-        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        a.button { padding: 6px 12px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Producer Projects</title>
+
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f7; margin:0; }
+    nav { background:#0d0d0f; padding:12px 24px; }
+    nav a {
+      color:#fff; text-decoration:none; margin-right:16px;
+      font-weight:600; font-size:15px;
+    }
+    nav a:hover { color:#ffd700; }
+
+    .page { max-width:1000px; margin:0 auto; padding:24px; }
+
+    table {
+      width:100%; border-collapse:collapse; margin-top:24px;
+      background:#fff; border-radius:10px; overflow:hidden;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    }
+    th, td {
+      padding:10px 12px; border-bottom:1px solid #e5e7eb;
+      text-align:left; font-size:0.95rem;
+    }
+    th { background:#f3f4f6; font-weight:600; }
+
+    .inline-form { display:inline; }
+
+    /* Returned files row styling */
+    .returned-row td {
+      background:#f9fafb;
+      border-bottom:1px solid #e5e7eb;
+    }
+
+    .asset-strip {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      padding:8px 4px;
+      font-size:0.88rem;
+    }
+
+    .slot {
+      background:#fff;
+      padding:6px 10px;
+      border-radius:8px;
+      box-shadow:0 1px 3px rgba(0,0,0,0.08);
+      display:flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+
+    .check { color:#16a34a; font-weight:bold; }
+    .pending { color:#6b7280; font-style:italic; }
+
+    form.create-form {
+      background:#fff; padding:16px 20px; border-radius:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+      margin-top:16px;
+      display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;
+    }
+
+    label { display:block; font-weight:600; margin-bottom:4px; }
+    input {
+      width:100%; padding:8px; border-radius:6px;
+      border:1px solid #d1d5db; box-sizing:border-box;
+    }
+    button {
+      padding:10px 18px; border-radius:8px; border:none;
+      background:#0d0d0f; color:#fff; font-weight:600; cursor:pointer;
+    }
+    button:hover { background:#1f2937; }
+
+  </style>
 </head>
+
 <body>
-<h1>Projects</h1>
 
-<p>
-    <a class="button" th:href="@{'/admin/projects/' + ${producerId} + '/create'}">+ Add Project</a>
-</p>
+<nav>
+  <a href="/admin/dashboard">Dashboard</a>
+  <a href="/admin/producers">Producers</a>
+</nav>
 
-<table>
+<div class="page">
+
+  <h1>Projects for Producer <span th:text="${producerId}">0</span></h1>
+  <p>Create a project, then use <strong>Send</strong> to generate a 21-day magic link.</p>
+
+  <!-- Create Project Form -->
+  <form class="create-form"
+        th:action="@{|/admin/producers/${producerId}/projects|}"
+        method="post">
+
+    <div style="flex:1; min-width:220px;">
+      <label>Project Name</label>
+      <input name="projectName" type="text" placeholder="Album or project name" required>
+    </div>
+
+    <div style="flex:1; min-width:160px;">
+      <label>Author</label>
+      <input name="author" type="text" placeholder="Author" required>
+    </div>
+
+    <div style="flex:1; min-width:220px;">
+      <label>Email</label>
+      <input name="email" type="email" placeholder="author@example.com" required>
+    </div>
+
+    <div>
+      <button type="submit">Create Project</button>
+    </div>
+
+  </form>
+
+  <!-- Project Table -->
+  <table>
     <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Start Date</th>
-        <th>Magic Link</th>
+      <th>Project ID</th>
+      <th>Project Name</th>
+      <th>Author</th>
+      <th>Email</th>
+      <th>Magic Link</th>
+      <th>Magic Key</th>
+      <th>Date Sent</th>
+      <th>Date Returned</th>
+      <th>Days Remaining</th>
     </tr>
-    <tr th:each="project : ${projects}">
-        <td th:text="${project.id}"></td>
-        <td th:text="${project.name}"></td>
-        <td th:text="${project.startDate}"></td>
-        <td>
-            <a th:href="${project.magicLink}" target="_blank" th:text="${project.magicLink}"></a>
-        </td>
-    </tr>
-</table>
 
-<p>
-    <a href="/admin/producers">Back to Producers</a> |
-    <a href="/admin/dashboard">Back to Dashboard</a>
-</p>
+    <tr th:if="${#lists.isEmpty(projectList)}">
+      <td colspan="9">No projects yet for this producer.</td>
+    </tr>
+
+    <th:block th:each="project : ${projectList}">
+
+      <!-- Row 1: Summary -->
+      <tr>
+        <td th:text="${project.id}">1</td>
+        <td th:text="${project.projectName}">Demo Project</td>
+        <td th:text="${project.author}">Demo Author</td>
+        <td th:text="${project.email}">demo@example.com</td>
+
+        <td>
+
+          <!-- Show ACTIVE send button when NOT sent -->
+          <form th:if="${project.magicKey == null}"
+                th:action="@{|/admin/producers/${producerId}/projects/${project.id}/send|}"
+                method="post"
+                class="inline-form">
+            <button type="submit">Send</button>
+          </form>
+
+          <!-- Show DISABLED button when sent -->
+          <button th:if="${project.magicKey != null}"
+                  disabled
+                  style="background:#9ca3af; cursor:not-allowed; border:none; padding:10px 18px; border-radius:8px; color:white;">
+            Sent
+          </button>
+
+        </td>
+
+        <td th:text="${project.magicKey} ?: '-'">-</td>
+        <td th:text="${project.dateSentFormatted} ?: '-'">-</td>
+        <td th:text="${project.dateReturnedFormatted} ?: '-'">-</td>
+        <td th:text="${project.daysRemaining} ?: '-'">-</td>
+      </tr>
+
+      <!-- Row 2: Returned Files Row -->
+      <tr class="returned-row">
+        <td colspan="9">
+          <div class="asset-strip">
+
+            <div class="slot">
+              Album:
+              <span th:if="${project.albumUploaded}" class="check">✔</span>
+              <span th:if="${!project.albumUploaded}" class="pending">pending</span>
+            </div>
+
+            <div class="slot">
+              NFT Album:
+              <span th:if="${project.nftUploaded}" class="check">✔</span>
+              <span th:if="${!project.nftUploaded}" class="pending">pending</span>
+            </div>
+
+            <div class="slot">
+              Bridge Version:
+              <span th:if="${project.bridgeUploaded}" class="check">✔</span>
+              <span th:if="${!project.bridgeUploaded}" class="pending">pending</span>
+            </div>
+
+            <div class="slot">
+              Meta:
+              <span th:if="${project.metaUploaded}" class="check">✔</span>
+              <span th:if="${!project.metaUploaded}" class="pending">pending</span>
+            </div>
+
+            <div class="slot" th:each="i : ${#numbers.sequence(1,9)}">
+              <span>Song <span th:text="${i}">1</span>:</span>
+              <span th:if="${project.songUploaded[i]}" class="check">✔</span>
+              <span th:if="${!project.songUploaded[i]}" class="pending">pending</span>
+            </div>
+
+          </div>
+        </td>
+      </tr>
+
+    </th:block>
+
+  </table>
+
+</div>
 </body>
 </html>

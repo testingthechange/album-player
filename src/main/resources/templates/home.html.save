@@ -1,12 +1,784 @@
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Home - Album Player</title>
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+            padding: 16px 16px 56px; /* bottom for lock bar */
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .section-description {
+            font-size: 0.9rem;
+            color: #777;
+            margin: 0 0 12px;
+        }
+
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            table-layout: fixed;
+        }
+
+        .grid-table th,
+        .grid-table td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .grid-table th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+
+        .grid-table td.number-cell {
+            width: 50px;
+            text-align: center;
+            background: #f9fafb;
+            font-weight: 500;
+        }
+
+        .col-title {
+            width: 18%;
+        }
+
+        .col-upload {
+            width: 20%;
+        }
+
+        .col-preview {
+            width: 40%;
+        }
+
+        .grid-table input[type="text"],
+        .grid-table input[type="file"] {
+            width: 100%;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            padding: 4px 6px;
+            box-sizing: border-box;
+        }
+
+        .song-audio {
+            width: 100%;
+        }
+
+        /* Section lock bar */
+        .section-lock-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 8px 12px;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fafafa;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .lock-status-label {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .lock-toggle-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .lock-toggle-btn.locked {
+            background: #1d4ed8;
+            color: #fff;
+        }
+
+        .lock-toggle-btn.unlocked {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .master-actions {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .master-info {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .master-warning {
+            font-size: 0.85rem;
+            color: #b91c1c;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 700px) {
+            .master-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome Home</h1>
-    <p>This is the user’s dashboard page.</p>
-    <a href="/producer">Go to Producer Page</a> |
-    <a href="/song">Go to Song Page</a> |
-    <a href="/meta">Go to Metadata Page</a>
+
+<!-- TOP NAV -->
+<div class="top-nav-wrap">
+    <div class="top-nav">
+        <div class="top-nav-left">
+            Album Player
+        </div>
+        <nav class="top-nav-links">
+            <a href="/home" class="active">Albums</a>
+            <a href="/song">Songs</a>
+            <a href="/meta">Meta</a>
+            <a href="/dashboard">Dashboard</a>
+        </nav>
+    </div>
+</div>
+
+<div class="page">
+    <h1>Album Worksheet</h1>
+    <p class="subtitle">
+        Configure your album songs, transition versions, and NFT mix bridges. Lock each section when done, then use Master Save.
+    </p>
+
+    <!-- MAIN PLAYER #1 -->
+    <section class="player-card">
+        <div class="player-main">
+            <div class="player-title">Album Player</div>
+
+            <div class="player-track">
+                <span class="meta-label">Now playing:</span>
+                <span class="meta-value" id="nowPlaying">No track</span>
+            </div>
+
+            <div class="player-controls">
+                <button type="button" id="playBtn" class="btn btn-primary">▶ Play</button>
+                <button type="button" id="pauseBtn" class="btn btn-secondary">⏸ Pause</button>
+                <button type="button" id="stopBtn" class="btn btn-secondary">■ Stop</button>
+                <button type="button" id="albumVersionBtn" class="btn btn-secondary">
+                    Album version
+                </button>
+                <button type="button" id="bridgeBtn" class="btn btn-secondary">
+                    Bridge
+                </button>
+                <button type="button" id="albumBridgeBtn" class="btn btn-secondary">
+                    NFT mix album
+                </button>
+            </div>
+        </div>
+
+        <div class="player-meta">
+            <div class="meta-row">
+                <span class="meta-label">Sequence:</span>
+                <span class="meta-value" id="sequenceLabel">Idle</span>
+            </div>
+            <div class="progress-bar" id="mainProgressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 1 -->
+    <form id="worksheetForm" action="/saveWorksheet" method="post">
+        <section class="section-block" data-section-id="section1" id="section1-block">
+            <h2>Songs (Album Version)</h2>
+            <p class="section-description">
+                Static album playlist used as the traditional album format.
+            </p>
+
+            <table class="grid-table" id="section1-table">
+                <thead>
+                <tr>
+                    <th style="width:60px;">Song #</th>
+                    <th class="col-title">Title (Album Version)</th>
+                    <th class="col-upload">Upload Album File</th>
+                    <th class="col-preview">Preview</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 1–9 -->
+                <tr>
+                    <td class="number-cell">1</td>
+                    <td><input type="text" name="albumTitle1" /></td>
+                    <td><input type="file" name="albumFile1" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">2</td>
+                    <td><input type="text" name="albumTitle2" /></td>
+                    <td><input type="file" name="albumFile2" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">3</td>
+                    <td><input type="text" name="albumTitle3" /></td>
+                    <td><input type="file" name="albumFile3" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">4</td>
+                    <td><input type="text" name="albumTitle4" /></td>
+                    <td><input type="file" name="albumFile4" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">5</td>
+                    <td><input type="text" name="albumTitle5" /></td>
+                    <td><input type="file" name="albumFile5" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">6</td>
+                    <td><input type="text" name="albumTitle6" /></td>
+                    <td><input type="file" name="albumFile6" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">7</td>
+                    <td><input type="text" name="albumTitle7" /></td>
+                    <td><input type="file" name="albumFile7" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">8</td>
+                    <td><input type="text" name="albumTitle8" /></td>
+                    <td><input type="file" name="albumFile8" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">9</td>
+                    <td><input type="text" name="albumTitle9" /></td>
+                    <td><input type="file" name="albumFile9" accept="audio/*" /></td>
+                    <td><audio class="song-audio section1-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="section-lock-bar">
+                <span class="lock-status-label">
+                    Status: <span class="lock-status-text">Unlocked</span>
+                </span>
+                <button type="button"
+                        class="lock-toggle-btn unlocked"
+                        data-locked="false">
+                    🔓 Unlock
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section class="section-block" data-section-id="section2" id="section2-block">
+            <h2>Song Files for Bridge (Transition Version)</h2>
+            <p class="section-description">
+                Transition song files used for adaptive playback and NFT mix album.
+            </p>
+
+            <table class="grid-table" id="section2-table">
+                <thead>
+                <tr>
+                    <th style="width:60px;">Song #</th>
+                    <th class="col-title">Title (Transition Version)</th>
+                    <th class="col-upload">Upload Transition File</th>
+                    <th class="col-preview">Preview</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 1–9 -->
+                <tr>
+                    <td class="number-cell">1</td>
+                    <td><input id="section2Song1Title" name="transitionTitle1" ... >
+" /></td>
+                    <td><input type="file" name="transitionFile1" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">2</td>
+                    <td><input type="text" name="transitionTitle2" /></td>
+                    <td><input type="file" name="transitionFile2" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">3</td>
+                    <td><input type="text" name="transitionTitle3" /></td>
+                    <td><input type="file" name="transitionFile3" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">4</td>
+                    <td><input type="text" name="transitionTitle4" /></td>
+                    <td><input type="file" name="transitionFile4" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">5</td>
+                    <td><input type="text" name="transitionTitle5" /></td>
+                    <td><input type="file" name="transitionFile5" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">6</td>
+                    <td><input type="text" name="transitionTitle6" /></td>
+                    <td><input type="file" name="transitionFile6" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">7</td>
+                    <td><input type="text" name="transitionTitle7" /></td>
+                    <td><input type="file" name="transitionFile7" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">8</td>
+                    <td><input type="text" name="transitionTitle8" /></td>
+                    <td><input type="file" name="transitionFile8" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                <tr>
+                    <td class="number-cell">9</td>
+                    <td><input type="text" name="transitionTitle9" /></td>
+                    <td><input type="file" name="transitionFile9" accept="audio/*" /></td>
+                    <td><audio class="song-audio section2-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="section-lock-bar">
+                <span class="lock-status-label">
+                    Status: <span class="lock-status-text">Unlocked</span>
+                </span>
+                <button type="button"
+                        class="lock-toggle-btn unlocked"
+                        data-locked="false">
+                    🔓 Unlock
+                </button>
+            </div>
+        </section>
+
+        <!-- SECOND PLAYER ABOVE SECTION 3 -->
+        <section class="player-card">
+            <div class="player-main">
+                <div class="player-title">Album Player</div>
+
+                <div class="player-track">
+                    <span class="meta-label">Now playing:</span>
+                    <span class="meta-value" id="nowPlaying2">No track</span>
+                </div>
+
+                <div class="player-controls">
+                    <button type="button" id="playBtn2" class="btn btn-primary">▶ Play</button>
+                    <button type="button" id="pauseBtn2" class="btn btn-secondary">⏸ Pause</button>
+                    <button type="button" id="stopBtn2" class="btn btn-secondary">■ Stop</button>
+                    <button type="button" id="albumVersionBtn2" class="btn btn-secondary">
+                        Album version
+                    </button>
+                    <button type="button" id="bridgeBtn2" class="btn btn-secondary">
+                        Bridge
+                    </button>
+                    <button type="button" id="albumBridgeBtn2" class="btn btn-secondary">
+                        NFT mix album
+                    </button>
+                </div>
+            </div>
+
+            <div class="player-meta">
+                <div class="meta-row">
+                    <span class="meta-label">Sequence:</span>
+                    <span class="meta-value" id="sequenceLabel2">Idle</span>
+                </div>
+                <div class="progress-bar" id="mainProgressBar2">
+                    <div class="progress-fill" id="progressFill2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section class="section-block" data-section-id="section3" id="section3-block">
+            <h2>Bridges – Default Album Mix (Song Files)</h2>
+            <p class="section-description">
+                Bridge files that sit between transition songs from Section 2.
+            </p>
+
+            <table class="grid-table" id="section3-table">
+                <thead>
+                <tr>
+                    <th style="width:70px;">From Song #</th>
+                    <th style="width:70px;">To Song #</th>
+                    <th class="col-title">Bridge Title</th>
+                    <th class="col-upload">Upload Bridge File</th>
+                    <th class="col-preview">Bridge Timeline</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 1–9 -->
+                <tr>
+                    <td class="number-cell">1</td>
+                    <td class="number-cell">2</td>
+                    <td><input type="text" name="bridgeTitle1" /></td>
+                    <td><input type="file" name="bridgeFile1" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">2</td>
+                    <td class="number-cell">3</td>
+                    <td><input type="text" name="bridgeTitle2" /></td>
+                    <td><input type="file" name="bridgeFile2" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">3</td>
+                    <td class="number-cell">4</td>
+                    <td><input type="text" name="bridgeTitle3" /></td>
+                    <td><input type="file" name="bridgeFile3" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">4</td>
+                    <td class="number-cell">5</td>
+                    <td><input type="text" name="bridgeTitle4" /></td>
+                    <td><input type="file" name="bridgeFile4" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">5</td>
+                    <td class="number-cell">6</td>
+                    <td><input type="text" name="bridgeTitle5" /></td>
+                    <td><input type="file" name="bridgeFile5" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">6</td>
+                    <td class="number-cell">7</td>
+                    <td><input type="text" name="bridgeTitle6" /></td>
+                    <td><input type="file" name="bridgeFile6" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">7</td>
+                    <td class="number-cell">8</td>
+                    <td><input type="text" name="bridgeTitle7" /></td>
+                    <td><input type="file" name="bridgeFile7" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">8</td>
+                    <td class="number-cell">9</td>
+                    <td><input type="text" name="bridgeTitle8" /></td>
+                    <td><input type="file" name="bridgeFile8" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="number-cell">9</td>
+                    <td class="number-cell">—</td>
+                    <td><input type="text" name="bridgeTitle9" /></td>
+                    <td><input type="file" name="bridgeFile9" accept="audio/*" /></td>
+                    <td>
+                        <audio class="song-audio bridge-audio preview-audio" controls controlslist="nodownload noplaybackrate"></audio>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="section-lock-bar">
+                <span class="lock-status-label">
+                    Status: <span class="lock-status-text">Unlocked</span>
+                </span>
+                <button type="button"
+                        class="lock-toggle-btn unlocked"
+                        data-locked="false">
+                    🔓 Unlock
+                </button>
+            </div>
+        </section>
+
+        <input type="hidden" name="lockStates" id="lockStatesInput" value="" />
+
+        <div class="master-actions">
+            <div class="master-info">
+                <div>Master controls</div>
+                <div class="master-warning" id="lockWarning">
+                    All three sections must be locked before saving.
+                </div>
+            </div>
+            <button type="button" id="saveBtn" class="btn btn-primary" disabled>
+                Save Entire Worksheet
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+  // ---------- config ----------
+  const S2_ID = "section2-block";      // Section 2 container id
+  const MAX_SONG = 9;
+  const LOCK_KEY = "homePageLockState";
+
+  // keys
+  const titleKey = n => `home.section2.song${n}.title`;
+  const fileNameKey = n => `home.s2.fileName.${n}`;
+  const fileBlobKey = n => `home.s2.file.${n}`;
+
+  // ---------- DOM ----------
+  const section2 = document.getElementById(S2_ID) || document.body;
+
+  // find row helpers
+  function rowFor(n){
+    // try to find a table row that contains title input name="transitionTitleN"
+    const input = section2.querySelector(`input[name="transitionTitle${n}"]`);
+    return input ? input.closest("tr") || section2 : section2;
+  }
+  function titleInput(n){ return section2.querySelector(`input[name="transitionTitle${n}"]`); }
+  function fileInput(n){ return section2.querySelector(`input[name="transitionFile${n}"]`); }
+  function audioEl(n){
+    // prefer an <audio> in the same row; fallback: first preview in Section 2
+    const r = rowFor(n);
+    return r.querySelector("audio") || section2.querySelector(".section2-audio") || null;
+  }
+  function ensureFileLabel(n){
+    const fi = fileInput(n); if(!fi) return null;
+    let label = fi.parentElement.querySelector(".filename");
+    if(!label){
+      label = document.createElement("div");
+      label.className = "filename";
+      label.style.fontSize = ".85rem";
+      label.style.color = "#374151";
+      label.style.background = "#f3f4f6";
+      label.style.border = "1px dashed #d1d5db";
+      label.style.borderRadius = "6px";
+      label.style.padding = "4px 8px";
+      label.style.marginTop = "6px";
+      fi.parentElement.appendChild(label);
+    }
+    return label;
+  }
+
+  // ---------- IndexedDB for local files ----------
+  let db;
+  function openDB(){
+    return new Promise((res,rej)=>{
+      const r = indexedDB.open("albumPlayer", 3);
+      r.onupgradeneeded = e=>{
+        const _db = e.target.result;
+        if(!_db.objectStoreNames.contains("homeSection2")) _db.createObjectStore("homeSection2");
+      };
+      r.onsuccess = e=>{ db=e.target.result; res(db); };
+      r.onerror = ()=>rej(r.error);
+    });
+  }
+  async function idbSet(key, blob){
+    if(!db) await openDB();
+    return new Promise((res,rej)=>{
+      const tx = db.transaction("homeSection2","readwrite");
+      tx.objectStore("homeSection2").put(blob, key);
+      tx.oncomplete = ()=>res(true);
+      tx.onerror = ()=>rej(tx.error);
+    });
+  }
+  async function idbGet(key){
+    if(!db) await openDB();
+    return new Promise((res,rej)=>{
+      const tx = db.transaction("homeSection2","readonly");
+      const req = tx.objectStore("homeSection2").get(key);
+      req.onsuccess = ()=>res(req.result || null);
+      req.onerror = ()=>rej(req.error);
+    });
+  }
+
+  // ---------- Lock UI (same behavior as before) ----------
+  // build a compact lock bar if not present
+  let lockToggle = section2.querySelector("#homeLockToggle");
+  if(!lockToggle){
+    const lockBar = document.createElement("div");
+    lockBar.style.margin = "16px 0 0";
+    lockBar.style.padding = "12px 10px";
+    lockBar.style.borderTop = "1px solid #e5e7eb";
+    lockBar.style.display = "flex";
+    lockBar.style.justifyContent = "space-between";
+    lockBar.style.alignItems = "center";
+    lockBar.style.gap = "16px";
+    lockBar.innerHTML = `
+      <div>
+        <strong>Status:</strong> <span id="homeLockStatus" style="font-weight:600;color:#16a34a">Unlocked</span>
+        <div style="font-size:.85rem;color:#6b7280">Edits disabled while Locked. Snapshot on Lock and on leave.</div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <span style="font-size:.9rem;color:#374151">Lock page</span>
+        <span id="homeToggleWrap" style="position:relative;width:46px;height:24px;display:inline-block;">
+          <input id="homeLockToggle" type="checkbox" style="display:none">
+          <span id="homeSlider" style="position:absolute;inset:0;border-radius:999px;background:#16a34a;transition:.2s;"></span>
+          <span id="homeKnob" style="position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;"></span>
+        </span>
+      </label>
+    `;
+    section2.appendChild(lockBar);
+  }
+
+  const lockStatus = section2.querySelector("#homeLockStatus");
+  const knob = section2.querySelector("#homeKnob");
+  const slider = section2.querySelector("#homeSlider");
+  lockToggle = section2.querySelector("#homeLockToggle");
+
+  function setDisabled(disabled){
+    const controls = section2.querySelectorAll("input, select, textarea, button");
+    controls.forEach(el=>{
+      if(el === lockToggle) return;
+      el.disabled = disabled;
+      el.style.cursor = disabled ? "not-allowed" : "";
+    });
+  }
+  function applyLockState(locked){
+    if(locked){
+      lockStatus.textContent = "Locked";
+      lockStatus.style.color = "#b91c1c";
+      slider.style.background = "#b91c1c";
+      knob.style.transform = "translateX(22px)";
+      setDisabled(true);
+    }else{
+      lockStatus.textContent = "Unlocked";
+      lockStatus.style.color = "#16a34a";
+      slider.style.background = "#16a34a";
+      knob.style.transform = "translateX(0)";
+      setDisabled(false);
+    }
+  }
+  function saveLock(locked){ try{ localStorage.setItem(LOCK_KEY, locked?"1":"0"); }catch(e){} }
+
+  // ---------- Save/Restore for all songs ----------
+  function saveTitle(n){
+    const ti = titleInput(n);
+    if(!ti) return;
+    try{ localStorage.setItem(titleKey(n), ti.value || ""); }catch(e){}
+  }
+
+  async function handleFileChange(n){
+    const fi = fileInput(n);
+    if(!fi || !fi.files || !fi.files[0]) return;
+    const file = fi.files[0];
+    try{
+      await idbSet(fileBlobKey(n), file);
+      localStorage.setItem(fileNameKey(n), file.name);
+      const label = ensureFileLabel(n);
+      if(label){ label.textContent = file.name; }
+      const a = audioEl(n);
+      if(a){ a.src = URL.createObjectURL(file); a.load(); }
+    }catch(e){
+      alert("Could not save locally (storage limit?). The file will play now but may not persist.");
+      const a = audioEl(n);
+      if(a){ a.src = URL.createObjectURL(file); a.load(); }
+      const label = ensureFileLabel(n);
+      if(label){ label.textContent = file.name; }
+    }
+  }
+
+  async function restoreSong(n){
+    // title
+    const ti = titleInput(n);
+    if(ti){
+      try{
+        const saved = localStorage.getItem(titleKey(n)) || "";
+        if(!ti.value) ti.value = saved;
+      }catch(e){}
+    }
+    // file blob + filename
+    try{
+      const blob = await idbGet(fileBlobKey(n));
+      const a = audioEl(n);
+      if(blob && a){ a.src = URL.createObjectURL(blob); }
+    }catch(e){}
+    try{
+      const fn = localStorage.getItem(fileNameKey(n)) || "";
+      const label = ensureFileLabel(n);
+      if(label){ label.textContent = fn || "(no file selected)"; }
+    }catch(e){}
+  }
+
+  // ---------- Init ----------
+  // lock default: unlocked on first run
+  const initiallyLocked = (localStorage.getItem(LOCK_KEY) === "1");
+  lockToggle.checked = initiallyLocked;
+  applyLockState(initiallyLocked);
+
+  // Wire inputs for all songs
+  for(let n=1;n<=MAX_SONG;n++){
+    const ti = titleInput(n);
+    const fi = fileInput(n);
+    if(ti){
+      ti.addEventListener("input", ()=>{ if(!lockToggle.checked) saveTitle(n); });
+    }
+    if(fi){
+      fi.addEventListener("change", async ()=>{
+        if(lockToggle.checked){
+          fi.value = "";
+          alert("Unlock the page to change files.");
+          return;
+        }
+        await handleFileChange(n);
+      });
+    }
+    // restore previously saved state
+    restoreSong(n);
+  }
+
+  // Lock toggle
+  lockToggle.addEventListener("change", ()=>{
+    const locked = lockToggle.checked;
+    applyLockState(locked);
+    saveLock(locked);
+    if(locked){
+      // snapshot all titles on lock
+      for(let n=1;n<=MAX_SONG;n++) saveTitle(n);
+    }
+  });
+
+  // snapshot on leave if locked
+  function snapshotIfLocked(){
+    if(!lockToggle.checked) return;
+    for(let n=1;n<=MAX_SONG;n++) saveTitle(n);
+  }
+  window.addEventListener("pagehide", snapshotIfLocked);
+  document.addEventListener("visibilitychange", ()=>{ if(document.hidden) snapshotIfLocked(); });
+})();
+</script>
+
+
 </body>
 </html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="navbar">
+    <nav style="background:#222; padding:10px; display:flex; align-items:center; justify-content:space-between;">
+        <!-- Left side links -->
+        <div>
+            <a href="/" style="color:white; margin-right:15px;">Home</a>
+            <a href="/album" style="color:white; margin-right:15px;">Albums</a>
+            <a href="/account" style="color:white; margin-right:15px;">My Account</a>
+            <a href="/login" style="color:white;">Login</a>
+        </div>
+
+        <!-- Right side: search + cart -->
+        <div style="display:flex; align-items:center;">
+            <form action="/search" method="get" style="margin-right:15px;">
+                <input type="text" name="q" placeholder="Search albums..." 
+                       style="padding:5px; border-radius:4px; border:none;">
+                <button type="submit" style="padding:5px 10px; border:none; border-radius:4px;">Search</button>
+            </form>
+            <a href="/cart" style="color:white; font-size:18px; text-decoration:none;">🛒</a>
+        </div>
+    </nav>
+</div>
+</body>
+</html>

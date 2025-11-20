@@ -1,34 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Producers</title>
-    <style>
-        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        form.inline { display: inline; }
-        a.button { padding: 6px 12px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Producers / Accounts</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f7; }
+    nav { background: #0d0d0f; padding: 12px 24px; }
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      margin-right: 24px;
+    }
+    nav a:hover { color: #ffd700; }
+    .page { max-width: 900px; margin: 0 auto; padding: 24px; }
+    h1 { margin-bottom: 8px; }
+    h2 { margin-top: 30px; }
+    p { color: #555; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    th { background: #f3f4f6; font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+
+    label { font-weight: 600; margin-bottom: 4px; display: block; }
+    input {
+      width: 100%; padding: 8px; border-radius: 6px;
+      border: 1px solid #d1d5db; box-sizing: border-box;
+    }
+    button {
+      padding: 10px 18px; border-radius: 8px; border: none;
+      background: #0d0d0f; color: white; font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #1f2937; }
+  </style>
 </head>
 <body>
-<h1>Producers</h1>
 
-<p><a class="button" href="/admin/create-producer">+ Add Producer</a></p>
+<nav>
+  <a href="/admin/dashboard">Dashboard</a>
+  <a href="/admin/producers">Producer</a>
+  <a href="/admin/master">Master</a>
+  <a href="/admin/accounts">Accounts</a>
+  <a href="/admin/incoming">Incoming</a>
+</nav>
 
-<table>
+<div class="page">
+  <h1>Producers / Create an Account</h1>
+  <p>Enter account details for a producer.</p>
+
+  <form th:action="@{/admin/producers}" method="post"
+        style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-top:20px; background:#fff; padding:16px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+
+    <div style="flex:1; min-width:180px;">
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" placeholder="Full name" required />
+    </div>
+
+    <div style="flex:1; min-width:180px;">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="name@example.com" required />
+    </div>
+
+    <div style="flex:1; min-width:160px;">
+      <label for="company">Company</label>
+      <input id="company" name="company" type="text" placeholder="Company" />
+    </div>
+
+    <div style="flex:1; min-width:140px;">
+      <label for="cell">Cell</label>
+      <input id="cell" name="cell" type="text" placeholder="Cell number" />
+    </div>
+
+    <div>
+      <button type="submit">Create</button>
+    </div>
+
+  </form>
+
+  <h2>Account List</h2>
+  <table>
     <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
+      <th>Producer</th>
+      <th>Email</th>
+      <th>Company</th>
+      <th>Cell</th>
     </tr>
-    <tr th:each="producer : ${producers}">
-        <td th:text="${producer.id}"></td>
-        <!-- Name is clickable to open Projects -->
-        <td><a th:href="@{'/admin/projects/' + ${producer.id}}" th:text="${producer.name}"></a></td>
-        <td th:text="${producer.email}"></td>
-    </tr>
-</table>
 
-<p><a href="/admin/dashboard">Back to Dashboard</a></p>
+    <tr th:each="producer : ${producerList}">
+      <td>
+        <a th:href="@{'/admin/producers/' + ${producer.id} + '/projects'}"
+           th:text="|[${producer.id}] ${producer.name}|"></a>
+      </td>
+      <td th:text="${producer.email}">example@demo.com</td>
+      <td th:text="${producer.company}">Demo Company</td>
+      <td th:text="${producer.cell}">(555) 000-0000</td>
+    </tr>
+
+  </table>
+</div>
+
 </body>
 </html>

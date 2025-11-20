@@ -1,10 +1,7 @@
-services:
-  - type: web
-    name: album-player
-    env: java
-    plan: free
-    buildCommand: "mvn -B clean package -DskipTests"
-    startCommand: "java -jar target/album-player-0.0.1-SNAPSHOT.jar"
-    envVars:
-      - key: SPRING_PROFILES_ACTIVE
-        value: prod
+node_modules
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+.env
+frontend/node_modules
+frontend/build

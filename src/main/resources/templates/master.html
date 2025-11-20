@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Master Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f4f7; }
+    nav { background: #0d0d0f; padding: 12px 24px; }
+    nav a { color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 24px; }
+    nav a:hover { color: #ffd700; }
+    .page { max-width: 900px; margin: 0 auto; padding: 24px; }
+    h1 { margin-bottom: 8px; }
+    p { color: #555; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/admin/dashboard">Dashboard</a>
+  <a href="/admin/producers">Producers</a>
+  <a href="/admin/master">Master</a>
+  <a href="/admin/accounts">Accounts</a>
+  <a href="/admin/incoming">Incoming</a>
+</nav>
+
+<div class="page">
+  <h1>Master Page</h1>
+  <p>This is a placeholder Master page (view name: <strong>master</strong>).</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+package com.example.albumplayer;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class BackendDashboardController {
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard() {
+        // Uses src/main/resources/templates/admin/dashboard.html
+        return "admin/dashboard";
+    }
+}

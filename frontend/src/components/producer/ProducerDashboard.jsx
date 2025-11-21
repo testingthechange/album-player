@@ -1,9 +1,13 @@
 // src/components/producer/ProducerDashboard.jsx
 import React from "react";
 import { createInitialProjectsState } from "../../state/projectState";
+import {
+  hasMetaReturn,
+  hasSongsReturn,
+} from "../../state/localProjectStorage";
 
 export function ProducerDashboard({ onOpenMiniSiteFromDashboard }) {
-  const [projectState] = React.useState(createInitialProjectsState());
+  const [projectState] = React.useState(createInitialProjectsState);
   const projects = projectState.projects || [];
 
   const handleOpenMini = () => {
@@ -16,18 +20,19 @@ export function ProducerDashboard({ onOpenMiniSiteFromDashboard }) {
     <div>
       <h1>Producer Dashboard</h1>
 
-      {/* Top controls */}
-      <div style={{ marginBottom: "1rem", display: "flex", gap: "0.5rem" }}>
-        <button type="button" onClick={handleOpenMini}>
-          Open Mini-Site
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={handleOpenMini}
+        style={{ marginBottom: "0.75rem" }}
+      >
+        Open Mini-Site
+      </button>
 
-      {/* Projects table */}
       <table
         border="1"
         cellPadding="6"
-        style={{ borderCollapse: "collapse", width: "100%" }}
+        cellSpacing="0"
+        style={{ width: "100%", fontSize: "0.9rem" }}
       >
         <thead>
           <tr>
@@ -36,92 +41,78 @@ export function ProducerDashboard({ onOpenMiniSiteFromDashboard }) {
             <th>Producer</th>
             <th>Status</th>
             <th>Producer Return</th>
-            <th style={{ width: "26rem" }}>File Return Checklist</th>
-            <th style={{ width: "10rem" }}>Return Status</th>
+            <th>File Return Checklist</th>
+            <th>Return Status</th>
           </tr>
         </thead>
         <tbody>
           {projects.map((p) => {
-            const metaDone = !!p.metaMasterSaved || !!p.metaReturnReceived;
+            const projectId = p.projectId;
+
+            // Meta + Songs (Extended) return flags from storage or in-memory
+            const metaReturned =
+              hasMetaReturn(projectId) || p.producerReturnReceived;
+
+            const songsReturned =
+              hasSongsReturn(projectId) || !!p.songsMasterSaved;
+
+            // Overall "producer return" – any section returned
+            const anyReturned = metaReturned || songsReturned;
 
             return (
-              <tr key={p.projectId}>
-                <td>{p.title}</td>
-                <td>{p.artistName}</td>
-                <td>{p.assignedProducerName}</td>
+              <tr key={projectId}>
+                <td>{p.title || p.projectName || "Untitled project"} </td>
+                <td>{p.artistName || "Unknown artist"}</td>
+                <td>{p.assignedProducerName || p.producerName || "Producer"}</td>
+                <td>{p.status || "Draft"}</td>
 
-                {/* Old status (you can refine later) */}
-                <td>{p.producerReturnReceived ? "In Progress" : "Draft"}</td>
+                {/* Producer Return column */}
+                <td style={{ textAlign: "center" }}>
+                  {anyReturned ? "✅" : "⭕"}
+                </td>
 
-                {/* Old icon (placeholder) */}
-                <td>{p.producerReturnReceived ? "✅" : "⭕"}</td>
-
-                {/* FILE RETURN CHECKLIST (visual only for now) */}
+                {/* File Return Checklist column */}
                 <td>
                   <div
                     style={{
-                      border: "2px solid #000",
-                      padding: "0.45rem 0.6rem",
+                      border: "1px solid black",
+                      padding: "4px",
                       fontSize: "0.85rem",
-                      display: "inline-block",
-                      minWidth: "240px",
                     }}
                   >
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        marginBottom: "0.25rem",
-                      }}
-                    >
-                      Returned files
+                    <div>
+                      <strong>Returned files</strong>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "0.35rem",
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {/* Meta – first, and bold because it’s the one wired up */}
-                      <span>
-                        <strong>Meta</strong>
-                      </span>
-                      <span>· Album</span>
-                      <span>· Extended songs</span>
-                      <span>· NFT mix</span>
-                      <span>· Song 1</span>
-                      <span>· Song 2</span>
-                      <span>· Song 3</span>
-                      <span>· Song 4</span>
-                      <span>· Song 5</span>
-                      <span>· Song 6</span>
-                      <span>· Song 7</span>
-                      <span>· Song 8</span>
-                      <span>· Song 9</span>
+
+                    <div style={{ marginTop: "2px" }}>
+                      <strong>Meta</strong>:{" "}
+                      {metaReturned ? "✅ Returned" : "⬜ Pending"}
+                    </div>
+
+                    <div style={{ marginTop: "2px" }}>
+                      <strong>Extended (Songs)</strong>:{" "}
+                      {songsReturned ? "✅ Returned" : "⬜ Pending"}
+                    </div>
+
+                    <div style={{ marginTop: "2px" }}>
+                      Album · NFT · Other rows TBD
                     </div>
                   </div>
                 </td>
 
-                {/* RETURN STATUS – only Meta is truly wired to logic right now */}
+                {/* Return Status column */}
                 <td>
-                  <div style={{ fontSize: "0.85rem" }}>
-                    <div style={{ marginBottom: "0.25rem" }}>
-                      <span style={{ fontWeight: 600 }}>Meta:</span>{" "}
-                      {metaDone ? (
-                        <span style={{ color: "#0a7a28" }}>✅ Received</span>
-                      ) : (
-                        <span style={{ color: "#999" }}>⬜ Pending</span>
-                      )}
+                  <div style={{ fontSize: "0.8rem", color: "#444" }}>
+                    <div>
+                      <strong>Meta:</strong>{" "}
+                      {metaReturned ? "✅ Returned" : "⬜ Pending"}
                     </div>
-
-                    {/* The rest are placeholders for later integration */}
-                    <div style={{ opacity: 0.75 }}>
-                      <div>Album: ⬜ Pending</div>
-                      <div>Extended: ⬜ Pending</div>
-                      <div>NFT mix: ⬜ Pending</div>
-                      <div>Songs 1–9: ⬜ Pending</div>
+                    <div>
+                      <strong>Extended (Songs):</strong>{" "}
+                      {songsReturned ? "✅ Returned" : "⬜ Pending"}
                     </div>
+                    <div>Album: ⬜ Pending</div>
+                    <div>NFT: ⬜ Pending</div>
                   </div>
                 </td>
               </tr>
@@ -132,3 +123,5 @@ export function ProducerDashboard({ onOpenMiniSiteFromDashboard }) {
     </div>
   );
 }
+
+export default ProducerDashboard;

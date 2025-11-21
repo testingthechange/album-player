@@ -1,15 +1,9 @@
 // src/components/producer/ProducerProjectLayout.jsx
 import React from "react";
 import { HomePage } from "../Home/HomePage";
-import MetaPage from "../Meta/MetaPage";
+import MiniMeta from "../mini/MiniMeta";
 import { SongsPage } from "../Songs/SongsPage";
 import { createInitialProjectsState } from "../../state/projectState";
-import MiniMeta from "../mini/MiniMeta";
-
-/**
- * For now we only use createInitialProjectsState().
- * Everything is in-memory on the frontend while we're in dev.
- */
 
 function createDefaultProjects() {
   return createInitialProjectsState();
@@ -22,163 +16,45 @@ export function ProducerProjectLayout({
 }) {
   const [tab, setTab] = React.useState("home");
 
-  // Overall project state (all projects for this producer)
   const [projectState, setProjectState] = React.useState(() =>
     createDefaultProjects()
   );
 
   const projects = projectState.projects || [];
-
   const projectIndex = Math.max(
     0,
     projects.findIndex((p) => p.projectId === projectId)
   );
-
   const currentProject = projects[projectIndex] || projects[0];
 
-  // If no project at all, just bail out cleanly
   if (!currentProject) {
     return <div>No project found.</div>;
   }
 
-  // ---- UPDATE HELPERS ------------------------------------------------------
-
   const handleProjectUpdate = (partial) => {
     setProjectState((prev) => {
       const prevProjects = prev.projects || [];
-      if (!prevProjects.length) return prev;
-
       const idx = Math.max(
         0,
         prevProjects.findIndex((p) => p.projectId === projectId)
       );
-      const target = prevProjects[idx] || prevProjects[0];
-
-      const updatedProject = { ...target, ...partial };
-      const nextProjects = [...prevProjects];
-      nextProjects[idx] = updatedProject;
-
-      return { ...prev, projects: nextProjects };
+      const updated = { ...prevProjects[idx], ...partial };
+      const next = [...prevProjects];
+      next[idx] = updated;
+      return { ...prev, projects: next };
     });
   };
 
-  const handleSongTitlesChangeFromHome = (updatedSongs) => {
-    handleProjectUpdate({ songs: updatedSongs });
-  };
+  // ---- STATUS FLAGS --------------------------------------------------------
+  const homeMasterSaved = !!currentProject.homeMasterSaved;
+  const songsMasterSaved = !!currentProject.songsMasterSaved;
 
-  // ---- META MASTER STATUS --------------------------------------------------
-
-  // Meta master save can be tracked either as:
-  // - flat fields (metaMasterSaved, metaMasterSavedAt), or
-  // - inside meta.masterSaved (from MetaPage).
   const metaFromProject = currentProject.meta || {};
-  const metaMasterSavedFlag =
-    currentProject.metaMasterSaved || metaFromProject.masterSaved || false;
-  const metaMasterSaved = !!metaMasterSavedFlag;
+  const metaMasterSaved =
+    !!currentProject.metaMasterSaved ||
+    !!(metaFromProject && metaFromProject.masterSaved);
 
-  const metaMasterSavedAt =
-    currentProject.metaMasterSavedAt || metaFromProject.masterSavedAt || null;
-
-  // ---- RENDER HELPERS ------------------------------------------------------
-
-  const renderHeaderBar = () => (
-    <div
-      style={{
-        marginBottom: "0.75rem",
-        padding: "0.5rem 0.75rem",
-        borderBottom: "1px solid #ddd",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "0.75rem",
-      }}
-    >
-      <div>
-        <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>
-          Project ID: <strong>{currentProject.projectId}</strong>
-        </div>
-        <div style={{ fontSize: "1.1rem", fontWeight: 600 }}>
-          {currentProject.title || "Untitled project"}
-        </div>
-        <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>
-          Artist:{" "}
-          <strong>{currentProject.artistName || "Unknown artist"}</strong>
-        </div>
-      </div>
-
-      {showDashboardButton && (
-        <button
-          type="button"
-          onClick={onGoDashboard}
-          style={{
-            padding: "0.35rem 0.9rem",
-            borderRadius: "4px",
-            border: "1px solid #666",
-            backgroundColor: "#f5f5f5",
-            cursor: "pointer",
-            fontSize: "0.85rem",
-            whiteSpace: "nowrap",
-          }}
-        >
-          Back to Dashboard
-        </button>
-      )}
-    </div>
-  );
-
-  const renderTabs = () => (
-    <div style={{ marginBottom: "0.75rem" }}>
-      <button
-        type="button"
-        onClick={() => setTab("home")}
-        style={{
-          marginRight: "0.5rem",
-          padding: "0.3rem 0.8rem",
-          borderRadius: "4px",
-          border: tab === "home" ? "2px solid #333" : "1px solid #aaa",
-          backgroundColor: tab === "home" ? "#e0e0ff" : "#f5f5f5",
-          cursor: "pointer",
-          fontSize: "0.85rem",
-        }}
-      >
-        Home
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setTab("meta")}
-        style={{
-          marginRight: "0.5rem",
-          padding: "0.3rem 0.8rem",
-          borderRadius: "4px",
-          border: tab === "meta" ? "2px solid #333" : "1px solid #aaa",
-          backgroundColor: tab === "meta" ? "#e0ffe0" : "#f5f5f5",
-          cursor: "pointer",
-          fontSize: "0.85rem",
-        }}
-      >
-        Meta
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setTab("songs")}
-        style={{
-          marginRight: "0.5rem",
-          padding: "0.3rem 0.8rem",
-          borderRadius: "4px",
-          border: tab === "songs" ? "2px solid #333" : "1px solid #aaa",
-          backgroundColor: tab === "songs" ? "#ffe0f5" : "#f5f5f5",
-          cursor: "pointer",
-          fontSize: "0.85rem",
-        }}
-      >
-        Songs
-      </button>
-    </div>
-  );
-
-  // Checklist cell helper
+  // ---- CHECKLIST CELL STYLE ------------------------------------------------
   const checklistCellStyle = (filled) => ({
     width: "1.7rem",
     height: "1.2rem",
@@ -191,31 +67,18 @@ export function ProducerProjectLayout({
     color: filled ? "#fff" : "#000",
   });
 
+  // ---- RETURNED FILES CHECKLIST --------------------------------------------
   const renderReturnedFilesChecklist = () => {
-    // We only have Meta wired up right now.
-    // Others are placeholders for future integration.
     const songCols = Array.from({ length: 9 }).map((_, i) => `Song ${i + 1}`);
 
     return (
-      <div
-        style={{
-          marginBottom: "1rem",
-          border: "1px solid #999",
-          borderRadius: "4px",
-        }}
-      >
-        <div
-          style={{
-            padding: "0.35rem 0.6rem",
-            borderBottom: "1px solid #999",
-            fontWeight: 600,
-          }}
-        >
+      <div style={{ marginBottom: "1rem", border: "1px solid #999", borderRadius: "4px" }}>
+        <div style={{ padding: "0.35rem 0.6rem", borderBottom: "1px solid #999", fontWeight: 600 }}>
           Returned files checklist
         </div>
 
         <div style={{ display: "flex" }}>
-          {/* Left: inner mini-table for categories vs songs */}
+          {/* LEFT SIDE GRID */}
           <div style={{ flex: 1, borderRight: "1px solid #999" }}>
             <div
               style={{
@@ -227,147 +90,78 @@ export function ProducerProjectLayout({
               Returned files
             </div>
 
-            <div
-              style={{
-                overflowX: "auto",
-                padding: "0.35rem 0.6rem 0.6rem",
-              }}
-            >
-              <table
-                style={{
-                  borderCollapse: "collapse",
-                  minWidth: "100%",
-                  fontSize: "0.85rem",
-                }}
-              >
+            <div style={{ overflowX: "auto", padding: "0.35rem 0.6rem 0.6rem" }}>
+              <table style={{ borderCollapse: "collapse", minWidth: "100%", fontSize: "0.85rem" }}>
                 <thead>
                   <tr>
-                    <th
-                      style={{
-                        textAlign: "left",
-                        paddingRight: "0.75rem",
-                        paddingBottom: "0.25rem",
-                      }}
-                    />
+                    <th style={{ paddingRight: "0.75rem" }} />
                     {songCols.map((label) => (
-                      <th
-                        key={label}
-                        style={{
-                          textAlign: "center",
-                          padding: "0 0.2rem 0.25rem",
-                          whiteSpace: "nowrap",
-                          fontWeight: 500,
-                        }}
-                      >
+                      <th key={label} style={{ textAlign: "center" }}>
                         {label}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Album row – placeholder */}
-                  <tr>
-                    <td
-                      style={{
-                        paddingRight: "0.75rem",
-                        paddingTop: "0.1rem",
-                        paddingBottom: "0.1rem",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Album
-                    </td>
-                    {songCols.map((label) => (
-                      <td key={label} style={{ padding: "0.1rem 0.2rem" }}>
-                        <div style={checklistCellStyle(false)} />
-                      </td>
-                    ))}
-                  </tr>
 
-                  {/* Extended row – placeholder */}
+                  {/* ⭐ Album (Home Master Save) */}
                   <tr>
-                    <td
-                      style={{
-                        paddingRight: "0.75rem",
-                        paddingTop: "0.1rem",
-                        paddingBottom: "0.1rem",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Extended
-                    </td>
-                    {songCols.map((label) => (
-                      <td key={label} style={{ padding: "0.1rem 0.2rem" }}>
-                        <div style={checklistCellStyle(false)} />
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* NFT row – placeholder */}
-                  <tr>
-                    <td
-                      style={{
-                        paddingRight: "0.75rem",
-                        paddingTop: "0.1rem",
-                        paddingBottom: "0.1rem",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      NFT
-                    </td>
-                    {songCols.map((label) => (
-                      <td key={label} style={{ padding: "0.1rem 0.2rem" }}>
-                        <div style={checklistCellStyle(false)} />
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Meta row – ONLY thing that’s wired up in dev */}
-                  <tr>
-                    <td
-                      style={{
-                        paddingRight: "0.75rem",
-                        paddingTop: "0.1rem",
-                        paddingBottom: "0.1rem",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      Meta
-                    </td>
+                    <td style={{ paddingRight: "0.75rem", whiteSpace: "nowrap" }}>Album</td>
                     {songCols.map((label, idx) => (
-                      <td key={label} style={{ padding: "0.1rem 0.2rem" }}>
-                        {/* For now we just light up the FIRST column when Meta is Master Saved. */}
+                      <td key={label}>
+                        <div style={checklistCellStyle(homeMasterSaved && idx === 0)}>
+                          {homeMasterSaved && idx === 0 ? "✓" : ""}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* ⭐ Extended (Songs Master Save) */}
+                  <tr>
+                    <td style={{ paddingRight: "0.75rem", whiteSpace: "nowrap" }}>Extended</td>
+                    {songCols.map((label, idx) => (
+                      <td key={label}>
+                        <div style={checklistCellStyle(songsMasterSaved && idx === 0)}>
+                          {songsMasterSaved && idx === 0 ? "✓" : ""}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* NFT Placeholder */}
+                  <tr>
+                    <td style={{ paddingRight: "0.75rem" }}>NFT</td>
+                    {songCols.map((label) => (
+                      <td key={label}>
+                        <div style={checklistCellStyle(false)} />
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* ⭐ Meta (Meta Master Save) */}
+                  <tr>
+                    <td style={{ paddingRight: "0.75rem" }}>Meta</td>
+                    {songCols.map((label, idx) => (
+                      <td key={label}>
                         <div style={checklistCellStyle(metaMasterSaved && idx === 0)}>
                           {metaMasterSaved && idx === 0 ? "✓" : ""}
                         </div>
                       </td>
                     ))}
                   </tr>
+
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Right: Return status column with a check box only */}
+          {/* RIGHT SIDE STATUS BOX */}
           <div style={{ width: "190px" }}>
-            <div
-              style={{
-                padding: "0.35rem 0.6rem",
-                borderBottom: "1px solid #999",
-                fontWeight: 600,
-              }}
-            >
+            <div style={{ padding: "0.35rem 0.6rem", borderBottom: "1px solid #999", fontWeight: 600 }}>
               Return status
             </div>
-            <div
-              style={{
-                padding: "0.6rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {/* Big box with check only if Meta Master Save is done */}
+
+            <div style={{ padding: "0.6rem", display: "flex", justifyContent: "center" }}>
               <div
                 style={{
                   width: "2.2rem",
@@ -378,77 +172,57 @@ export function ProducerProjectLayout({
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: "1.4rem",
-                  backgroundColor: metaMasterSaved ? "#20b84f" : "#fff",
-                  color: metaMasterSaved ? "#fff" : "#000",
+                  backgroundColor:
+                    homeMasterSaved || songsMasterSaved || metaMasterSaved
+                      ? "#20b84f"
+                      : "#fff",
+                  color:
+                    homeMasterSaved || songsMasterSaved || metaMasterSaved
+                      ? "#fff"
+                      : "#000",
                 }}
               >
-                {metaMasterSaved ? "✓" : ""}
+                {homeMasterSaved || songsMasterSaved || metaMasterSaved ? "✓" : ""}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Tiny footer note so we remember what’s wired up */}
-        <div
-          style={{
-            padding: "0.25rem 0.6rem 0.4rem",
-            fontSize: "0.75rem",
-            opacity: 0.8,
-          }}
-        >
-          In this dev build, the checklist and status only turn green when{" "}
-          <strong>Meta Master Save</strong> has been completed on the Meta page.
+        <div style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem", opacity: 0.8 }}>
+          Album → Home Master Save • Extended → Songs Master Save • Meta → Meta Master Save
         </div>
       </div>
     );
   };
 
   // ---- MAIN RENDER ---------------------------------------------------------
-
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0.75rem" }}>
-      {renderHeaderBar()}
-
       {renderReturnedFilesChecklist()}
 
-      {renderTabs()}
+      {/* Tabs */}
+      <div style={{ marginBottom: "0.75rem" }}>
+        <button onClick={() => setTab("home")} style={{ marginRight: "0.5rem" }}>Home</button>
+        <button onClick={() => setTab("meta")} style={{ marginRight: "0.5rem" }}>Meta</button>
+        <button onClick={() => setTab("songs")}>Songs</button>
+      </div>
 
-      {/* Tab content */}
       {tab === "home" && (
-        <HomePage
-          project={currentProject}
-          onSongTitlesChange={handleSongTitlesChangeFromHome}
-          onProjectUpdate={handleProjectUpdate}
-        />
+        <HomePage project={currentProject} onProjectUpdate={handleProjectUpdate} />
       )}
 
       {tab === "meta" && (
-  <MiniMeta projectId={projectId} onMasterSave={handleMetaMasterSave} />
-)}
-
-
-
-      {tab === "songs" && (
-        <SongsPage
-          project={currentProject}
-          onProjectUpdate={handleProjectUpdate}
-          showDashboardButton={showDashboardButton}
-          onGoDashboard={onGoDashboard}
-        />
+        <MiniMeta projectId={projectId} onMasterSave={(id, data) =>
+          handleProjectUpdate({
+            metaMasterSaved: true,
+            metaMasterSavedAt: data.savedAt,
+            meta: { ...data, masterSaved: true, masterSavedAt: data.savedAt }
+          })
+        } />
       )}
 
-      {/* Optional display of when Meta was master saved, just for debugging */}
-      {metaMasterSavedAt && (
-        <div
-          style={{
-            marginTop: "0.75rem",
-            fontSize: "0.75rem",
-            opacity: 0.8,
-            textAlign: "right",
-          }}
-        >
-          Meta master saved at: {metaMasterSavedAt}
-        </div>
+      {tab === "songs" && (
+        <SongsPage project={currentProject} onProjectUpdate={handleProjectUpdate} />
       )}
     </div>
   );

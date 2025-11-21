@@ -6,7 +6,7 @@
 export function createInitialProjectsState() {
   return {
     projects: [
-      createSampleProject("proj-001"),
+      createSampleProject("proj_002"),
       // Add more sample projects if you want:
       // createSampleProject("proj-002"),
     ],
